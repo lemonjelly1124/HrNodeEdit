@@ -1,0 +1,32 @@
+.nodemenu-content {
+    width: 120px;
+    background-color: #1A202C;
+    border-radius: 10px;
+    border-radius: 10px;
+}
+
+.nodemenu-content-item {
+    display: flex;
+    padding-left: 6px;
+    padding-right: 6px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    gap: 10px;
+}
+
+.nodemenu-content-item:hover {
+    background-color: #2D3748;
+    border-radius: 8px;
+}
+
+.nodemenu-content-item-text {
+    color: #E2E8F0;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.nodemenu-content-item-icon {
+    width: 18px;
+    height: 18px;
+}

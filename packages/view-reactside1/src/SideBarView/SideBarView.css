@@ -1,0 +1,65 @@
+.sidebarview {
+    width: 100%;
+    color: var(--vscode-editorError-foreground);
+    /* padding: 10px, 10px, 10px, 10px; */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.searchnode-div {
+    width: 100%;
+    background-color: transparent;
+    display: flex;
+    border: 1px;
+    padding: 2px;
+}
+
+/* .searchnode-div input[type="text"] {
+
+    height: 20px;
+    border-width: 1px;
+    border-style: solid;
+    flex: 1;
+    outline: none;
+} */
+
+.searchnode-div input[type="text"] {
+    width: 100%;
+    height: 25px;
+    font-size: 12px;
+    background-color: var(--vscode-input-background);
+    color: var(--vscode-input-foreground);
+    border: 1px solid var(--vscode-input-border, transparent);
+    border-radius: 4px;
+    box-shadow: none;
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.searchnode-div input[type="text"]::placeholder {
+    color: var(--vscode-input-placeholderForeground);
+}
+
+.searchnode-div input[type="text"]:focus {
+    border-color: var(--vscode-focusBorder);
+    box-shadow: 0 0 0 1px var(--vscode-focusBorder);
+}
+
+.searchnode-div input[type="text"]:hover {
+    border-color: var(--vscode-inputOption-activeBorder, var(--vscode-focusBorder));
+}
+
+
+.searchnode-div button {
+    outline-color: transparent;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background-color: #f0f0f0;
+}
+
+.searchnode-div button:focus {
+    outline: 2px solid var(--vscode-focusBorder);
+}

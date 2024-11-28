@@ -1,0 +1,45 @@
+.editlabel {
+    background-color: transparent;
+}
+
+.input-title:focus {
+    outline-color: transparent;
+    font-size: 12px;
+    text-transform: uppercase;
+    color: #E2E8F0;
+    background-color: #1A202C;
+    border: 1px solid #3A4D6D;
+    font-weight: 750;
+    border-radius: 2px;
+    width: 100px;
+}
+
+.input-content:focus {
+    outline-color: transparent;
+    font-size: 9px;
+    color: #718096;
+    background-color: #1A202C;
+    border: 1px solid #3A4D6D;
+    font-weight: 750;
+    margin-left: 7px;
+    border-radius: 2px;
+    width: 100px;
+}
+
+.label-title {
+    font-weight: 500;
+    color: #E2E8F0;
+    font-size: 12px;
+    align-items: center;
+}
+
+.label-content-div {
+    padding-left: 7px
+}
+
+.label-content {
+    color: #718096;
+    font-weight: 750;
+    font-size: 9px;
+
+}

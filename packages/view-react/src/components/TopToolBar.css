@@ -1,0 +1,46 @@
+.toptoolbar {
+    background-color: #1A202C;
+    border-radius: 17px;
+    width: 200px;
+    height: 34px;
+    position: relative;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    padding-left: 30px;
+    padding-right: 30px;
+    padding-top: 1px;
+}
+
+.toptoolbar-split {
+    width: 0.5px;
+    background-color: #a5b4ca;
+    height: 60%;
+}
+
+.toolitem-div {
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 4px;
+    padding-bottom: 3px;
+    border-radius: 17px;
+
+    background-color: transparent;
+    align-items: center;
+}
+
+.toolitem-div:hover {
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 4px;
+    padding-bottom: 3px;
+    border-radius: 17px;
+
+    background-color: #333d51;
+    align-items: center;
+}
+
+.toolitem-img {
+    width: 25px;
+    height: 25px;
+}

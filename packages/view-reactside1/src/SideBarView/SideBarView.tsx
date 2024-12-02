@@ -16,15 +16,23 @@ const SideBarView = () => {
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchNode(e.target.value);
+        if (e.target.value === '') {
+            vscode?.postMessage({ command: 'searchNode', data: '' });
+        }
     };
     const onSearchClick = () => { 
+        vscode?.postMessage({ command: 'searchNode', data: searchNode });
+    }
+    const onClearClick = () => { 
+        setSearchNode('');
         vscode?.postMessage({ command: 'searchNode', data: searchNode });
     }
     return (
         <div className='sidebarview'>
             <div className='searchnode-div'>
                 <input type='text' value={searchNode} placeholder='Search node' className='searchnode'  onChange={handleInputChange}/>
-                <button className='searchnode' onClick={onSearchClick}>Search</button>
+                <button className='searchnode' onClick={onSearchClick}>搜索</button>
+                <button className='searchnode' onClick={onClearClick}>全部</button>
             </div>
         </div>
     );

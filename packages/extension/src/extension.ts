@@ -21,26 +21,7 @@ let isSubThreadActived = false;
 let isMainThreadActived = false;
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-// 初始化根节点数据
-const initialData = {
-    "id": "1",
-    "label": "Parent Node",
-    "children": [
-        {
-            "id": "1-1",
-            "label": "Child Node 1",
-            "children": [
-                { "id": "1-1-1", "label": "Grandchild Node 1-1", },
-                { "id": "1-1-2", "label": "Grandchild Node 1-2", }
-            ]
-        },
-        {
-            "id": "1-2",
-            "label": "Child Node 2"
-        }
-    ]
-};
-const treeViewProvider = new SimpleTreeDataProvider(initialData);
+let treeViewProvider: SimpleTreeDataProvider;
 let webViewProvider: ViewProviderSidebar;
 export function activate(context: ExtensionContext) {
     //创建primary sidebar 视图
@@ -80,15 +61,27 @@ async function createPrimarySidebarView(context: ExtensionContext) {
     //注册sidebar webview视图
     window.registerWebviewViewProvider('sidebar-view-container',webViewProvider,{ webviewOptions: { retainContextWhenHidden: true } });
     //注册sidebar treeview视图
+    treeViewProvider = new SimpleTreeDataProvider(context);
     vscode.window.registerTreeDataProvider('treeView', treeViewProvider);
 
     vscode.commands.registerCommand('extension.searchNode', (nodeId: string) => { 
-        vscode.window.showInformationMessage(`Search node ID: ${nodeId}`);
-        treeViewProvider.updateJsonData(projectData);
+        treeViewProvider.updateJsonData(projectData, nodeId);
     });
 
     vscode.commands.registerCommand('extension.handleButtonClick', (nodeId: string) => {
-        vscode.window.showInformationMessage(`Button clicked on node ID: ${nodeId}`);
+        
+        wayTitle = "";
+        wayId = "";
+        searchNodeByID(nodeId);
+        wayTitle = "主线程->" + wayTitle.substring(0, wayTitle.length - 2);
+        wayId = "main->" + wayId.substring(0, wayId.length - 2);
+        const titles = wayTitle.split('->');
+        const partrnttitle = titles[titles.length - 2];
+        
+        const ids = wayId.split('->');
+        const parentId = ids[ids.length - 2];
+        
+        openSubThread(context, { id: parentId, title: partrnttitle },nodeId);
     });
 
     
@@ -119,7 +112,7 @@ async function openMainThreadView(context: ExtensionContext, path: string) {
         light: vscode.Uri.file(vscode.Uri.joinPath(context.extensionUri, 'image', 'hr.svg').fsPath),
         dark: vscode.Uri.file(vscode.Uri.joinPath(context.extensionUri, 'image', 'hr.svg').fsPath)
     };
-    viewProviderPanel.resolveWebviewView(panel);
+    await viewProviderPanel.resolveWebviewView(panel);
     panel.webview.onDidReceiveMessage(
         async (message) => {
             await handleWebviewMessage(message, panel, context);
@@ -144,7 +137,9 @@ async function openMainThreadView(context: ExtensionContext, path: string) {
         projectData = await readProjectData(projectPath);
         const mainElement = projectData.find((element: any) => element.parentID === 'main');
         const nodes = await getSubThreadNodes();
-        await delay(400);
+        await delay(500);
+        treeViewProvider.updateJsonData(projectData);       //刷新节点树
+        checkNodeData();
         panel.webview.postMessage({ type: 'openprojectback', path: projectPath, data: mainElement, threadid: 'main' });
         panel.webview.postMessage({ type: 'setnodeoptions', data: nodes });
     }
@@ -216,10 +211,10 @@ async function handleWebviewMessage(
             }
             break;
         case 'searchid':
-            way = "";
+            wayTitle = "";
             await searchNodeByID(message.data.id);
-            way = "主线程" + way.substring(0, way.length - 2);
-            panel.webview.postMessage({ type: 'searchidback', data: { way: way } });
+            wayTitle = "主线程" + wayTitle.substring(0, wayTitle.length - 2);
+            panel.webview.postMessage({ type: 'searchidback', data: { wayTitle: wayTitle } });
             break;
         case 'nodetitlechange':
             await nodeTitleChange(message.data);
@@ -369,15 +364,19 @@ async function openFileInSplitEditor(filePath: string) {
         vscode.window.showErrorMessage(`打开文件失败: ${error.message}`);
     });
 }
-async function openSubThread(context: ExtensionContext, data: any) {
+async function openSubThread(context: ExtensionContext, data: any,centerNodeid?:string) {
 
     webviewPanels.forEach(panel => {
         panel.webview.postMessage({ type: 'panelactive', data: data.id });
+        if (centerNodeid&&centerNodeid!=='main') {
+            panel.webview.postMessage({ type: 'setnodetocenter', data: centerNodeid });
+        }
     });
 
     await delay(50);
-    if (isSubThreadActived) {
+    if (isSubThreadActived || isMainThreadActived) {
         isSubThreadActived = false;
+        isMainThreadActived = false;
         return '';
     }
     const { callables, subscribables } = getControllers();
@@ -412,6 +411,9 @@ async function openSubThread(context: ExtensionContext, data: any) {
     await delay(200);
     panel.webview.postMessage({ type: 'openprojectback', path: projectPath, data: mainElement, threadid: threadid });
     panel.webview.postMessage({ type: 'setnodeoptions', data: nodes });
+    if (centerNodeid && centerNodeid !== 'main') {
+        panel.webview.postMessage({ type: 'setnodetocenter', data: centerNodeid });
+    }
 
     webviewPanels.push(panel);
     panel.onDidDispose(() => {
@@ -440,6 +442,7 @@ async function saveNode(data: any) {
 
     if (isSaveNodeToFile) {
         saveProjetData(projectPath, projectData);
+        treeViewProvider.updateJsonData(projectData);
         vscode.window.showInformationMessage('保存节点成功');
     }
 }
@@ -457,7 +460,6 @@ async function saveAllNode() {
     await delay(2000);
     isSaveNodeToFile = true;
     saveProjetData(projectPath, projectData);
-    vscode.window.showInformationMessage('保存所有标签页节点成功');
 }
 
 
@@ -521,17 +523,20 @@ async function checkNodeData() {
     saveProjetData(projectPath, projectData);
 }
 
-let way = '';
+let wayTitle = '';
+let wayId='';
 //根据节点ID搜索节点所在位置
 async function searchNodeByID(id: string) {
     for (const element of projectData) {
         for (const node of element.nodes) {
             if (node.id === id) {
                 if (element.parentID !== 'main') {
-                    way = node.data.title + '->' + way;
+                    wayTitle = node.data.title + '->' + wayTitle;
+                    wayId=node.id+'->'+wayId;
                     await searchNodeByID(element.parentID);
                 } else {
-                    way = node.data.title + '->' + way;
+                    wayTitle = node.data.title + '->' + wayTitle;
+                    wayId = node.id + '->' + wayId;
                 }
             }
         }

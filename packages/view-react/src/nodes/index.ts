@@ -9,7 +9,6 @@ import { SwitchNode } from "./SwitchNode";
 // type cNode = Node | ProcessNodeData;
 
 export const initialNodes= [
-
 ];
 
 export const nodeTypes = {

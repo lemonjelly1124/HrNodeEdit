@@ -132,7 +132,7 @@ export const StartNode = ({ data, id }: any) => {
                 <EditLabel Value={content} type="content" onEdit={editContent} onValueChanged={handleContentChanged} />
             </div>
             <div className="node-state">
-                <NodeState isRunning={Running} isSubThread={Subthread} isNormal={Normal} onStatusChange={handleStatusChange} />
+                <NodeState isRunning={Running} isSubThread={Subthread} isNormal={Normal} onStatusChange={handleStatusChange} isSubBtnHide={true} />
             </div>
 
             <Handle className="node-handle-s" type="source" position={data.isSwapped ? Position.Left : Position.Right} style={{ top: '50%' }} isConnectable={true} onMouseEnter={onHandleClick} />

@@ -11,8 +11,7 @@ import { useCallback, useState, useEffect } from 'react';
 import dagre from "dagre";
 import CryptoJS from 'crypto-js';
 import { Position } from '@xyflow/react';
-import SearchBar from '../components/SearchBar';
-import Combox from '../components/Combox';
+
 import NodeBar from '../components/NodeBar';
 
 let vscode: ReturnType<typeof window.acquireVsCodeApi> | undefined;
@@ -242,6 +241,7 @@ const MyFlow = () => {
         });
     }
     //通知extension保存所有打开界面的节点数据
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const saveAllNodeToExtension = () => {
         vscode.postMessage({
             type: 'saveallnode',
@@ -422,7 +422,19 @@ const MyFlow = () => {
         setEdges((edges) => addEdge(changes, edges));
         addHistory();
     };
-
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const centerNode = (nodeId: string) => {
+        const node = reactFlowInstance.getNode(nodeId);
+        if (node) {
+            // 将视野中心移动到目标节点的位置
+            reactFlowInstance.setCenter(node.position.x + 100, node.position.y + 50, {
+                zoom: 1.5, // 可选，设置缩放级别
+                duration: 800, // 可选，设置动画时长（毫秒）
+            });
+        } else {
+            console.warn(`Node with id ${nodeId} not found.`);
+        }
+    };
 
 
     // 拖动添加节点
@@ -565,6 +577,9 @@ const MyFlow = () => {
                 case 'setnodeoptions':
                     updateOptions(message.data);
                     break;
+                case 'setnodetocenter':
+                    centerNode(message.data);
+                    break;
             }
         };
         // 监听来自 VSCode 扩展的消息
@@ -573,7 +588,7 @@ const MyFlow = () => {
         return () => {
             window.removeEventListener('message', handleMessage);
         };
-    }, [addHistory, clearNode, handleNodeClick, handleNodeTitleChange, handleSwapBtnClick, onNodeListClickHandle, onNodeStateHandle, projectDir, saveNodeToExtension, setEdges, setNodes, setPanelActive, setProjectPath, subThreadToExtension, updateOptions]);
+    }, [addHistory, centerNode, clearNode, handleNodeClick, handleNodeTitleChange, handleSwapBtnClick, onNodeListClickHandle, onNodeStateHandle, projectDir, saveNodeToExtension, setEdges, setNodes, setPanelActive, setProjectPath, subThreadToExtension, updateOptions]);
 
     useEffect(() => {
         if (historyArr.length == 0) {
@@ -768,8 +783,7 @@ const MyFlow = () => {
                     <button onClick={() => onLayout("TB")}>纵向布局</button>
                     <button onClick={() => onLayout("LR")}>横向布局</button>
                     <button onClick={() => logInfo()}>输出LOG</button> */}
-                    <SearchBar result={searchResult} onSearch={handleSearch} />
-                    <Combox options={options} onItemSelected={handleItemSelected} />
+
                 </div>
                 <NodeBar />
             </ReactFlow>

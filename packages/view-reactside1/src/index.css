@@ -20,7 +20,7 @@ body {
     place-items: center;
     overflow-y: hidden;
     overflow-x: hidden;
-    min-width: 200px;
+    min-width: 100px;
     min-height: 1000px;
     background-color:var(--vscode-activityBar-background);
 }

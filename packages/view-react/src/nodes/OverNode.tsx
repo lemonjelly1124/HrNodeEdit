@@ -135,7 +135,7 @@ export const OverNode = ({ data, id }: any) => {
                 </div>
             
             <div className="node-state">
-                <NodeState isRunning={Running} isSubThread={Subthread} isNormal={Normal} onStatusChange={handleStatusChange} />
+                <NodeState isRunning={Running} isSubThread={Subthread} isNormal={Normal} onStatusChange={handleStatusChange} isSubBtnHide={true} />
             </div>
 
             <Handle className="node-handle-t" type="target" position={data.isSwapped ? Position.Right : Position.Left} style={{ top: '50%' }} isConnectable={true} onMouseEnter={onHandleClick} />

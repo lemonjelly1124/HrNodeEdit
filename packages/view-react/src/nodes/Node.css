@@ -1,10 +1,17 @@
 .node {
     padding: 1px;
     border-radius: 10px;
-    background-color: transparent;
     width: 150px;
     background-color: #1A202C;
     border: 1px solid transparent;
+}
+
+.node-selected {
+    padding: 1px;
+    border-radius: 10px;
+    width: 150px;
+    background-color: #2D3748;
+    border: 1px solid #3A4D6D;
 }
 
 .node:hover {
@@ -97,7 +104,8 @@
     flex-shrink: 0;
     color: #a5b4ca;
 }
-.node-targetlabel{
+
+.node-targetlabel {
     color: #a5b4ca;
 }
 

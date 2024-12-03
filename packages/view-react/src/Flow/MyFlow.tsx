@@ -121,7 +121,6 @@ const MyFlow = () => {
     const [isEdgeAnimated, setIsEdgeAnimated] = useState(false);
     const [selectionNodes, setSelectionNodes] = useState([]);
     const [selectionEdges, setSelectionEdges] = useState([]);
-    const [searchResult, setSearchResult] = useState('');
     const { screenToFlowPosition } = useReactFlow();
     const vscode = getVsCodeApi();
     const reactFlowInstance = useReactFlow();
@@ -348,6 +347,7 @@ const MyFlow = () => {
                     id: generateUniqueId(),
                     type: nodeType,
                     position: { x: wx, y: node.position.y },
+                    selected: false,
                     data: {
                         title: nodeType,
                         content: `备注`,
@@ -381,19 +381,13 @@ const MyFlow = () => {
 
 
     const logInfo = () => {
-        vscode.postMessage({
-            type: 'loginfo',
-            data: {},
-        });
+        // vscode.postMessage({
+        //     type: 'loginfo',
+        //     data: {},
+        // });
+        console.log(nodes);
     }
 
-    const handleSearch = (query:string) => {
-        console.log(query);
-        vscode.postMessage({
-            type: 'searchid',
-            data: {id:query},
-        });
-    }
     const onDragOver = useCallback((event: React.DragEvent<HTMLDivElement>) => {
         event.preventDefault();
         event.dataTransfer.dropEffect = "move";
@@ -426,16 +420,33 @@ const MyFlow = () => {
     const centerNode = (nodeId: string) => {
         const node = reactFlowInstance.getNode(nodeId);
         if (node) {
-            // 将视野中心移动到目标节点的位置
             reactFlowInstance.setCenter(node.position.x + 100, node.position.y + 50, {
                 zoom: 1.5, // 可选，设置缩放级别
                 duration: 800, // 可选，设置动画时长（毫秒）
             });
+            setNodes((nodes) =>
+                nodes.map((n) => {
+                        return {
+                            ...n,
+                            selected: false,
+                        };
+                })
+            );
+            setNodes((nodes) =>
+                nodes.map((n) => {
+                    if (n.id === nodeId) {
+                        return {
+                            ...n,
+                            selected: true,
+                        };
+                    }
+                    return n;
+                })
+            );
         } else {
             console.warn(`Node with id ${nodeId} not found.`);
         }
     };
-
 
     // 拖动添加节点
     const onDrop = useCallback(
@@ -454,6 +465,7 @@ const MyFlow = () => {
                 id: generateUniqueId(),
                 type,
                 position,
+                selected: false,
                 data: {
                     title: `${type}`,
                     content: `备注`,
@@ -488,6 +500,7 @@ const MyFlow = () => {
                         id: node.id,
                         type: node.type,
                         position: node.position,
+                        selected: false,
                         data: {
                             title: node.data.title,
                             content: node.data.content,
@@ -534,6 +547,7 @@ const MyFlow = () => {
                         id: node.id,
                         type: node.type,
                         position: node.position,
+                        selected: false,
                         data: {
                             title: node.data.title,
                             content: node.data.content,
@@ -570,9 +584,6 @@ const MyFlow = () => {
                     break;
                 case 'panelactive':
                     setPanelActive(message.data);
-                    break;
-                case 'searchidback':
-                    setSearchResult(message.data.way);
                     break;
                 case 'setnodeoptions':
                     updateOptions(message.data);
@@ -782,8 +793,7 @@ const MyFlow = () => {
                     <button onClick={edgesAnimated}>边线动画</button>
                     <button onClick={() => onLayout("TB")}>纵向布局</button>
                     <button onClick={() => onLayout("LR")}>横向布局</button>
-                    <button onClick={() => logInfo()}>输出LOG</button> */}
-
+                    <button onClick={() => logInfo()}>输出LOG</button>*/ }
                 </div>
                 <NodeBar />
             </ReactFlow>

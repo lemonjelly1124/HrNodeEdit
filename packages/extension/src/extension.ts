@@ -211,10 +211,6 @@ async function handleWebviewMessage(
             }
             break;
         case 'searchid':
-            wayTitle = "";
-            await searchNodeByID(message.data.id);
-            wayTitle = "主线程" + wayTitle.substring(0, wayTitle.length - 2);
-            panel.webview.postMessage({ type: 'searchidback', data: { wayTitle: wayTitle } });
             break;
         case 'nodetitlechange':
             await nodeTitleChange(message.data);

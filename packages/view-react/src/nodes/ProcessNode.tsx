@@ -1,6 +1,6 @@
 ﻿/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Handle, Position } from "reactflow";
+import { Handle, Position,Node } from "reactflow";
 import { useState, useRef, useEffect } from 'react';
 import './Node.css';
 import NodeMenu from "../components/NodeMenu";
@@ -12,7 +12,7 @@ import NodeState from '../components/NodeState';
 import EditLabel from "../components/EditLabel";
 import { useWebviewPublicPath } from '../hooks/use-webview-public-path';
 
-export const ProcessNode = ({ data, id }: any) => {
+export const ProcessNode = ({ data, id,selected }: any) => {
     const [processIconPath] = useWebviewPublicPath(processIcon)
     const [flipIconPath] = useWebviewPublicPath(flipIcon)
     const [threadIconPath] = useWebviewPublicPath(threadIcon)
@@ -147,7 +147,7 @@ export const ProcessNode = ({ data, id }: any) => {
         }
     };
     return (
-        <div className='node' onContextMenu={handleContextMenu} >
+        <div className={selected ? 'node-selected' : 'node'} onContextMenu={handleContextMenu} >
             <div className='node-title' onDoubleClick={handleDoubleClick}>
                 <img src={processIconPath} className='node-icon' />
                 <EditLabel Value={title} type="title" onEdit={editTitle} onValueChanged={handleTitleChanged} />

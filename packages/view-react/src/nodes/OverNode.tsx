@@ -12,7 +12,7 @@ import NodeState from '../components/NodeState';
 import EditLabel from "../components/EditLabel";
 import { useWebviewPublicPath } from '../hooks/use-webview-public-path';
 //创建随机id
-export const OverNode = ({ data, id }: any) => {
+export const OverNode = ({ data, id,selected }: any) => {
     const [stopIconPath] = useWebviewPublicPath(stopIcon)
     const [flipIconPath] = useWebviewPublicPath(flipIcon)
     const { onNodeListClick, onNodeStateChanged, onSwappedBtnClick, onNodeDoubleClick, onNodeTitleChange } = data;
@@ -125,7 +125,7 @@ export const OverNode = ({ data, id }: any) => {
     };
 
     return (
-        <div className='node' onContextMenu={handleContextMenu} >
+        <div className={selected ? 'node-selected' : 'node'} onContextMenu={handleContextMenu} >
             <div className='node-title' onDoubleClick={handleDoubleClick}>
                 <img src={stopIconPath} className='node-icon' />
                 <EditLabel Value={title} type="title" onEdit={editTitle} onValueChanged={handleTitleChanged} />

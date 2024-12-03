@@ -7,10 +7,10 @@ import SubButton from "../components/SubButton";
 import EditLabel from "../components/EditLabel";
 import startIcon from '/start.svg';
 import flipIcon from '/flip.svg';
-import NodeState from '../components/NodeState'; 
+import NodeState from '../components/NodeState';
 import { useWebviewPublicPath } from '../hooks/use-webview-public-path';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const StartNode = ({ data, id }: any) => {
+export const StartNode = ({ data, id, selected }: any) => {
     const [startIconPath] = useWebviewPublicPath(startIcon)
     const [flipIconPath] = useWebviewPublicPath(flipIcon)
 
@@ -32,7 +32,7 @@ export const StartNode = ({ data, id }: any) => {
 
     const handleTitleChanged = (oldValue: string, newValue: string) => {
         const node = { id: id, oldtitle: oldValue, newtitle: newValue };
-        if (newValue === '') { 
+        if (newValue === '') {
             setTitle(oldValue);
             data.title = oldValue;
         } else {
@@ -68,7 +68,7 @@ export const StartNode = ({ data, id }: any) => {
     // }
     const handleSwitchBtnClick = () => {
         if (onSwappedBtnClick) {
-            onSwappedBtnClick(id,data.isSwapped);
+            onSwappedBtnClick(id, data.isSwapped);
         }
     }
     const handleDoubleClick = () => {
@@ -96,7 +96,7 @@ export const StartNode = ({ data, id }: any) => {
             setNormal(status.isNormal);
         }
         if (onNodeStateChanged) {
-            onNodeStateChanged(id,status);
+            onNodeStateChanged(id, status);
         }
     };
 
@@ -123,7 +123,7 @@ export const StartNode = ({ data, id }: any) => {
         }
     };
     return (
-        <div className='node' onContextMenu={handleContextMenu} >
+        <div className={selected ? 'node-selected' : 'node'} onContextMenu={handleContextMenu} >
             <div className='node-title' onDoubleClick={handleDoubleClick}>
                 <img src={startIconPath} className='node-icon' />
                 <EditLabel Value={title} type="title" onEdit={editTitle} onValueChanged={handleTitleChanged} />

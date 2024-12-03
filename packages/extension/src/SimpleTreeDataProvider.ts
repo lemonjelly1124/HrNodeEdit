@@ -1,38 +1,30 @@
 
 import * as vscode from 'vscode';
-// import { ExtensionContext } from 'vscode';
 import os = require('os');
-// TreeView 数据提供器
-
 interface TreeNode {
     id: string;
     label: string;
     type: string;
     children?: TreeNode[];
 }
-
 export class SimpleTreeDataProvider implements vscode.TreeDataProvider<MyTreeItem> {
     private _onDidChangeTreeData: vscode.EventEmitter<MyTreeItem | undefined> = new vscode.EventEmitter<MyTreeItem | undefined>();
     readonly onDidChangeTreeData: vscode.Event<MyTreeItem | undefined> = this._onDidChangeTreeData.event;
     private context: vscode.ExtensionContext;
     private rootData: any; // 用于保存根节点的 JSON 数据
-    private treeJson: any;
     constructor(context: vscode.ExtensionContext) {
         this.context = context;
-        this.rootData = {};
+        this.rootData = { id: "", "label": "" };
     }
-
     getTreeItem(element: MyTreeItem): vscode.TreeItem {
         return element;
     }
-
     getChildren(element?: MyTreeItem): MyTreeItem[] {
         if (!element) {
             return [this.convertJsonToTreeItem(this.rootData)];
         }
         return element.children || [];
     }
-
     convertJsonToTreeItem(jsonData: any): MyTreeItem {
         const treeItem = new MyTreeItem(
             `${jsonData.label}__${jsonData.id}`, // 节点的文本
@@ -53,7 +45,7 @@ export class SimpleTreeDataProvider implements vscode.TreeDataProvider<MyTreeIte
             treeItem.children = jsonData.children.map((child: any) => this.convertJsonToTreeItem(child));
         }
         let iconpath;
-        switch (jsonData.type) { 
+        switch (jsonData.type) {
             case 'StartNode':
                 iconpath = vscode.Uri.joinPath(this.context.extensionUri, 'image', 'start.svg').fsPath;
                 break;
@@ -73,12 +65,11 @@ export class SimpleTreeDataProvider implements vscode.TreeDataProvider<MyTreeIte
                 iconpath = 'C:\\Users\\' + os.userInfo().username + '\\AppData\\Roaming\\Code\\User\\vsicons-custom-icons\\file_type_icon_hr32.svg';
         }
         treeItem.iconPath = {
-            light: vscode.Uri.file(iconpath), // 替换为实际图标路径
-            dark: vscode.Uri.file(iconpath)  // 替换为实际图标路径
+            light: vscode.Uri.file(iconpath),
+            dark: vscode.Uri.file(iconpath)
         };
         return treeItem;
     }
-
     // 更新树的根节点数据
     updateJsonData(newJsonData: any, _fliterStr?: string) {
         const treejson = this.covertNodeJsonToTreeJson(newJsonData, "main");
@@ -89,7 +80,6 @@ export class SimpleTreeDataProvider implements vscode.TreeDataProvider<MyTreeIte
         this.rootData = mainThreadObj;
         this._onDidChangeTreeData.fire(undefined); // 通知树视图更新
     }
-
     covertNodeJsonToTreeJson(projectData: any, parentid: string): any {
         let treeObj: any = [];
         let threadObj: any;
@@ -103,7 +93,7 @@ export class SimpleTreeDataProvider implements vscode.TreeDataProvider<MyTreeIte
             let temp: any = {};
             temp.id = node.id;
             temp.label = node.data.title;
-            temp.type= node.type;
+            temp.type = node.type;
             if (node.data.isSubthread) {
                 temp.children = this.covertNodeJsonToTreeJson(projectData, node.id);
             }
@@ -111,7 +101,6 @@ export class SimpleTreeDataProvider implements vscode.TreeDataProvider<MyTreeIte
         }
         return treeObj;
     }
-
     //找到节点title或id等于搜索关键字的节点，删除其子节点
     removeNodes(jsonObject: TreeNode, key: string): TreeNode | null {
         if (jsonObject.children) {
@@ -134,5 +123,4 @@ class MyTreeItem extends vscode.TreeItem {
     setCollapsibleState(state: vscode.TreeItemCollapsibleState) {
         this.collapsibleState = state;
     }
-
 }

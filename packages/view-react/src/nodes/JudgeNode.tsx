@@ -12,7 +12,7 @@ import NodeState from '../components/NodeState';
 import EditLabel from "../components/EditLabel";
 import { useWebviewPublicPath } from '../hooks/use-webview-public-path';
 
-export const JudgeNode = ({ data, id }: any) => {
+export const JudgeNode = ({ data, id,selected }: any) => {
     const [judgeIconPath] = useWebviewPublicPath(judgeIcon)
     const [flipIconPath] = useWebviewPublicPath(flipIcon)
     const [threadIconPath] = useWebviewPublicPath(threadIcon)
@@ -143,7 +143,7 @@ export const JudgeNode = ({ data, id }: any) => {
     };
 
     return (
-        <div className='node' onContextMenu={handleContextMenu} >
+        <div className={selected ? 'node-selected' : 'node'} onContextMenu={handleContextMenu} >
             <div className="node-top" onDoubleClick={handleDoubleClick}>
                 {data.isSwapped && <div className="node-targetlabel">
                     <label node-targetlabel>Y</label>

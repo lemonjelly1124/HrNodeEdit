@@ -15,7 +15,7 @@ import { useWebviewPublicPath } from '../hooks/use-webview-public-path';
 import EditLabel from "../components/EditLabel";
 
 
-export const SwitchNode = ({ data, id }: any) => {
+export const SwitchNode = ({ data, id,selected }: any) => {
     const [flipIconPath] = useWebviewPublicPath(flipIcon)
     const [threadIconPath] = useWebviewPublicPath(threadIcon)
     const [switchIconPath] = useWebviewPublicPath(switchIcon)
@@ -175,7 +175,7 @@ export const SwitchNode = ({ data, id }: any) => {
         }
     };
     return (
-        <div className='node' onContextMenu={handleContextMenu} >
+        <div className={selected ? 'node-selected' : 'node'} onContextMenu={handleContextMenu} >
             <div className="node-switch-btn-div">
                 <img src={addIconPath} className='node-switch-btn' onClick={addHandle} />
                 <img src={removeIconPath} className='node-switch-btn' onClick={removeHandle} />

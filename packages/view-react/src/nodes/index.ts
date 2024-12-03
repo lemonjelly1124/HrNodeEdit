@@ -16,6 +16,5 @@ export const nodeTypes = {
     ProcessNode: ProcessNode,
     OverNode: OverNode,
     JudgeNode: JudgeNode,
-    SwitchNode: SwitchNode,
-
+    SwitchNode: SwitchNode
 }

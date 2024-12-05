@@ -77,7 +77,7 @@ async function createPrimarySidebarView(context: ExtensionContext) {
         treeViewProvider.updateJsonData(projectData, nodeId);
     });
 
-    vscode.commands.registerCommand('extension.handleButtonClick', (nodeId: string) => {
+    vscode.commands.registerCommand('extension.handleButtonClick', async (nodeId: string) => {
         
         wayTitle = "";
         wayId = "";
@@ -90,6 +90,7 @@ async function createPrimarySidebarView(context: ExtensionContext) {
         const ids = wayId.split('->');
         const parentId = ids[ids.length - 2];
         
+
         openSubThread(context, { id: parentId, title: partrnttitle },nodeId);
     });
 
@@ -137,8 +138,8 @@ async function openMainThreadView(context: ExtensionContext, path: string) {
         }
         if (webviewPanels.length === 0) {
             checkNodeData();
-            projectPath = '';
-            projectData = [];
+            // projectPath = '';
+            // projectData = [];
         }   //全部节点编辑页面关闭后校验数据
     });
     if (path !== '') {
@@ -433,8 +434,8 @@ async function openSubThread(context: ExtensionContext, data: any,centerNodeid?:
         }
         if (webviewPanels.length === 0) {
             checkNodeData();
-            projectPath = '';
-            projectData = [];
+            // projectPath = '';
+            // projectData = [];
         }   //全部节点编辑页面关闭后校验数据
     });
     return '';

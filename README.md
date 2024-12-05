@@ -1,6 +1,6 @@
 # 简介
 
-Vscode 的 extension webview 开发示例，提供 Vue 和 React 实现，文档详细，举例丰富
+Vscode 的 节点编辑器插件，提供React 实现
 
 > 该项目已发布为 vscode 插件，可搜索 vscode-webview-extension-example 获取
 

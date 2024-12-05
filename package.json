@@ -6,15 +6,15 @@
   "scripts": {
     "dev": "run-p dev:view-*",
     "dev:extension": "pnpm run -F extension watch",
-    "dev:view-vue": "pnpm run -F view-vue watch",
     "dev:view-react": "pnpm run -F view-react watch",
+    "dev:view-reactside1": "pnpm run -F view-reactside1 watch",
     "clear": "run-s clear:* && rm -rf ./node_modules",
     "clear:extension": "pnpm run -F extension clear",
-    "clear:view-vue": "pnpm run -F view-vue clear",
     "clear:view-react": "pnpm run -F view-react clear",
+    "clear:view-reactside1": "pnpm run -F view-reactside1 clear",
     "build": "run-s build:*",
-    "build:view-vue": "pnpm run -F view-vue build",
     "build:view-react": "pnpm run -F view-react build",
+    "build:view-reactside1": "pnpm run -F view-reactside1 build",
     "build:extension": "pnpm run -F extension compile",
     "package": "pnpm run -F extension package"
   },

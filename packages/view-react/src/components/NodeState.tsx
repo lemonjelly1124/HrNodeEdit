@@ -6,11 +6,13 @@ interface StatusBarProps {
     isSubThread: boolean;
     isNormal: boolean;
     isSubBtnHide?: boolean;
+    theme?: string;
     onStatusChange: (status: { isRunning: boolean; isSubThread: boolean; isNormal: boolean }) => void;
 }
 
-const StateBar: React.FC<StatusBarProps> = ({ isRunning, isSubThread, isNormal, isSubBtnHide, onStatusChange }) => {
+const StateBar: React.FC<StatusBarProps> = (props) => {
 
+    const { isRunning, isSubThread, isNormal, isSubBtnHide,theme, onStatusChange } = props;
     const handleCheckboxChange = (field: string) => {
         const newStatus = {
             isRunning: field === 'isRunning' ? !isRunning : isRunning,
@@ -25,6 +27,7 @@ const StateBar: React.FC<StatusBarProps> = ({ isRunning, isSubThread, isNormal, 
             <label>
                 <input
                     type="checkbox"
+                    className={theme}
                     checked={isRunning}
                     onChange={() => handleCheckboxChange('isRunning')}
                 />
@@ -33,6 +36,7 @@ const StateBar: React.FC<StatusBarProps> = ({ isRunning, isSubThread, isNormal, 
             {!isSubBtnHide && <label>
                 <input
                     type="checkbox"
+                    className={theme}
                     checked={isSubThread}
                     onChange={() => handleCheckboxChange('isSubThread')}
                 />
@@ -41,6 +45,7 @@ const StateBar: React.FC<StatusBarProps> = ({ isRunning, isSubThread, isNormal, 
             <label>
                 <input
                     type="checkbox"
+                    className={theme}
                     checked={isNormal}
                     onChange={() => handleCheckboxChange('isNormal')}
                 />

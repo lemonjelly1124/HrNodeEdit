@@ -11,8 +11,8 @@ import { useCallback, useState, useEffect } from 'react';
 import dagre from "dagre";
 import CryptoJS from 'crypto-js';
 import { Position } from '@xyflow/react';
-
 import NodeBar from '../components/NodeBar';
+import "./MyFlow.css"
 
 let vscode: ReturnType<typeof window.acquireVsCodeApi> | undefined;
 const getVsCodeApi = () => {
@@ -26,6 +26,7 @@ interface Node extends ReactFlowNode {
     id: string;
     position: { x: number; y: number };
     type: string;
+    selected: boolean;
     data: {
         title: string;
         content: string;
@@ -33,6 +34,7 @@ interface Node extends ReactFlowNode {
         isSubthread: boolean;
         isNormal: boolean;
         isSwapped: boolean;
+        theme: string;
         onSubBtnClick: (id: string) => void;
         onSwappedBtnClick: (id: string, isSwapped: boolean) => void;
         onNodeListClick: (baseid: string, nodeType: string, position: string, handle: string) => void
@@ -50,17 +52,11 @@ interface Edge {
     targetHandle: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-interface flowObj {
-    nodes: Node[];
-    edges: Edge[];
-    parentID: string;
-}
-const nodeWidth = 172;
+const nodeWidth = 150;
 const nodeHeight = 90;
 const dagreGraph = new dagre.graphlib.Graph();
 dagreGraph.setDefaultEdgeLabel(() => ({}));
-const getLayoutedElements = (nodes: Node[], edges: Edge[], direction:string) => {
+const getLayoutedElements = (nodes: Node[], edges: Edge[], direction: string) => {
     const isHorizontal = direction === "LR";
     dagreGraph.setGraph({ rankdir: direction });
     nodes.forEach((node) => {
@@ -98,7 +94,7 @@ const encryptAndCopyToClipboard = async (text: string) => {
 };
 
 // 从剪切板读取并解密
-const decryptFromClipboard = async():Promise<string> => {
+const decryptFromClipboard = async (): Promise<string> => {
     const encryptedText = await navigator.clipboard.readText();
     try {
         const bytes = CryptoJS.AES.decrypt(encryptedText, encryptionKey);
@@ -110,6 +106,7 @@ const decryptFromClipboard = async():Promise<string> => {
     }
 };
 const MyFlow = () => {
+    const [theme, setTheme] = useState('');
     const [projectPath, setProjectPath] = useState('');
     const [projectDir, setProjectDir] = useState('');
     const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
@@ -136,8 +133,8 @@ const MyFlow = () => {
     };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    const updateOptions = (nodes:any) => {
-        const newOptions = nodes.map((node:any) => {
+    const updateOptions = (nodes: any) => {
+        const newOptions = nodes.map((node: any) => {
             return {
                 id: node.id,
                 title: node.data.title
@@ -324,12 +321,12 @@ const MyFlow = () => {
     }, [openCodeToExtension, setProjectDir]);
 
     //节点修改标题事件
-    const handleNodeTitleChange = useCallback((node:any) => {
+    const handleNodeTitleChange = useCallback((node: any) => {
         vscode.postMessage({
             type: 'nodetitlechange',
             data: node,
         });
-    },[vscode]);
+    }, [vscode]);
 
     //点击节点nodelist新建节点
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -355,6 +352,7 @@ const MyFlow = () => {
                         isSubthread: false,
                         isNormal: true,
                         isSwapped: false,
+                        theme: theme,
                         onSubBtnClick: subThreadToExtension,
                         onNodeListClick: onNodeListClickHandle,
                         onNodeStateChanged: onNodeStateHandle,
@@ -377,15 +375,11 @@ const MyFlow = () => {
             return nds;
         });
         addHistory();
-    }, [addHistory, handleNodeClick, handleNodeTitleChange, handleSwapBtnClick, onNodeStateHandle, setEdges, setNodes, subThreadToExtension]);
+    }, [addHistory, handleNodeClick, handleNodeTitleChange, handleSwapBtnClick, onNodeStateHandle, setEdges, setNodes, subThreadToExtension, theme]);
 
 
     const logInfo = () => {
-        // vscode.postMessage({
-        //     type: 'loginfo',
-        //     data: {},
-        // });
-        console.log(nodes);
+        console.log(theme);
     }
 
     const onDragOver = useCallback((event: React.DragEvent<HTMLDivElement>) => {
@@ -426,10 +420,10 @@ const MyFlow = () => {
             });
             setNodes((nodes) =>
                 nodes.map((n) => {
-                        return {
-                            ...n,
-                            selected: false,
-                        };
+                    return {
+                        ...n,
+                        selected: false,
+                    };
                 })
             );
             setNodes((nodes) =>
@@ -447,6 +441,21 @@ const MyFlow = () => {
             console.warn(`Node with id ${nodeId} not found.`);
         }
     };
+
+    const onVsCodeThemeChange = (theme: string) => {
+        setTheme(theme);
+        setNodes((nodes) =>
+            nodes.map((node) => {
+                return {
+                    ...node,
+                    data: {
+                        ...node.data,
+                        theme: theme,
+                    },
+                };
+            })
+        );
+    }
 
     // 拖动添加节点
     const onDrop = useCallback(
@@ -473,6 +482,7 @@ const MyFlow = () => {
                     isSubthread: false,
                     isNormal: true,
                     isSwapped: false,
+                    theme: theme,
                     onSubBtnClick: subThreadToExtension,
                     onSwappedBtnClick: handleSwapBtnClick,
                     onNodeListClick: onNodeListClickHandle,
@@ -485,7 +495,7 @@ const MyFlow = () => {
             addHistory();
             setHistoryState(0);
         },
-        [addHistory, handleNodeClick, handleNodeTitleChange, handleSwapBtnClick, onNodeListClickHandle, onNodeStateHandle, screenToFlowPosition, setNodes, subThreadToExtension]
+        [addHistory, handleNodeClick, handleNodeTitleChange, handleSwapBtnClick, onNodeListClickHandle, onNodeStateHandle, screenToFlowPosition, setNodes, subThreadToExtension, theme]
     );
 
     useEffect(() => {
@@ -508,6 +518,7 @@ const MyFlow = () => {
                             isSubthread: node.data.isSubthread,
                             isNormal: node.data.isNormal,
                             isSwapped: node.data.isSwapped,
+                            theme: theme,
                             onSubBtnClick: subThreadToExtension,
                             onNodeListClick: onNodeListClickHandle,
                             onNodeStateChanged: onNodeStateHandle,
@@ -555,6 +566,7 @@ const MyFlow = () => {
                             isSubthread: node.data.isSubthread,
                             isNormal: node.data.isNormal,
                             isSwapped: node.data.isSwapped,
+                            theme: theme,
                             onSubBtnClick: subThreadToExtension,
                             onNodeListClick: onNodeListClickHandle,
                             onNodeStateChanged: onNodeStateHandle,
@@ -591,6 +603,9 @@ const MyFlow = () => {
                 case 'setnodetocenter':
                     centerNode(message.data);
                     break;
+                case 'settheme':
+                    onVsCodeThemeChange(message.data);
+                    break;
             }
         };
         // 监听来自 VSCode 扩展的消息
@@ -599,7 +614,7 @@ const MyFlow = () => {
         return () => {
             window.removeEventListener('message', handleMessage);
         };
-    }, [addHistory, centerNode, clearNode, handleNodeClick, handleNodeTitleChange, handleSwapBtnClick, onNodeListClickHandle, onNodeStateHandle, projectDir, saveNodeToExtension, setEdges, setNodes, setPanelActive, setProjectPath, subThreadToExtension, updateOptions]);
+    }, [addHistory, centerNode, clearNode, handleNodeClick, handleNodeTitleChange, handleSwapBtnClick, onNodeListClickHandle, onNodeStateHandle, projectDir, saveNodeToExtension, setEdges, setNodes, setPanelActive, setProjectPath, subThreadToExtension, theme, updateOptions]);
 
     useEffect(() => {
         if (historyArr.length == 0) {
@@ -612,14 +627,14 @@ const MyFlow = () => {
         async function handleKeyDown(event: { ctrlKey: boolean; shiftKey: boolean; key: string; preventDefault: () => void; }) {
             if (event.ctrlKey && (event.key === 'h' || event.key === 'H')) {
                 reactFlowInstance.fitView();
-            } else if (event.ctrlKey && (event.key === 'c'|| event.key === 'C')) {
+            } else if (event.ctrlKey && (event.key === 'c' || event.key === 'C')) {
                 console.log('Ctrl+C');
-                encryptAndCopyToClipboard(JSON.stringify({ nodes:selectionNodes,edges:selectionEdges }));
-            } else if (event.ctrlKey && (event.key === 'v'|| event.key === 'V')) {
+                encryptAndCopyToClipboard(JSON.stringify({ nodes: selectionNodes, edges: selectionEdges }));
+            } else if (event.ctrlKey && (event.key === 'v' || event.key === 'V')) {
                 console.log('Ctrl+V');
                 const copiedStr = await decryptFromClipboard();
                 const copiedObj = JSON.parse(copiedStr);
-                const newArr=randomizeNodeIds(copiedObj);
+                const newArr = randomizeNodeIds(copiedObj);
                 const newNodes = newArr.nodes.map((node: any) => {
                     return {
                         ...node,
@@ -627,6 +642,7 @@ const MyFlow = () => {
                         selected: false,
                         data: {
                             ...node.data,
+                            theme: theme,
                             onSubBtnClick: subThreadToExtension,
                             onNodeListClick: onNodeListClickHandle,
                             onNodeStateChanged: onNodeStateHandle,
@@ -654,7 +670,7 @@ const MyFlow = () => {
                     setNodes(jsonObject.nodes);
                     setEdges(jsonObject.edges);
                 }
-            } else if (event.ctrlKey && (event.key === 'y'|| event.key === 'Y')) {
+            } else if (event.ctrlKey && (event.key === 'y' || event.key === 'Y')) {
                 console.log('Ctrl+Y');
                 if (historyIndex < historyArr.length) {
                     setHistoryIndex(historyIndex + 1);
@@ -677,16 +693,16 @@ const MyFlow = () => {
             document.removeEventListener('keydown', handleKeyDown);
             clearInterval(timer);
         };
-    }, [addHistory, handleNodeClick, handleNodeTitleChange, handleSwapBtnClick, historyArr, historyIndex, historyState, onNodeListClickHandle, onNodeStateHandle, reactFlowInstance, saveAllNodeToExtension, saveNodeToExtension, selectionEdges, selectionNodes, setEdges, setNodes, subThreadToExtension]);
+    }, [addHistory, handleNodeClick, handleNodeTitleChange, handleSwapBtnClick, historyArr, historyIndex, historyState, onNodeListClickHandle, onNodeStateHandle, reactFlowInstance, saveAllNodeToExtension, saveNodeToExtension, selectionEdges, selectionNodes, setEdges, setNodes, subThreadToExtension, theme]);
 
-    const randomizeNodeIds = (data:any): any => {
+    const randomizeNodeIds = (data: any): any => {
         const { nodes, edges } = data;
 
         // 创建一个映射表来存储旧 ID 到新随机 ID 的映射
         const idMap: Record<string, string> = {};
 
         // 为每个节点生成新的随机 ID，并更新节点 ID
-        const updatedNodes = nodes.map((node:Node) => {
+        const updatedNodes = nodes.map((node: Node) => {
             const newId = generateUniqueId();
             idMap[node.id] = newId;
             return { ...node, id: newId };
@@ -694,12 +710,12 @@ const MyFlow = () => {
 
         // 更新连线的 source 和 target，并过滤无效连线
         const updatedEdges = edges
-            .map((edge:Edge) => ({
+            .map((edge: Edge) => ({
                 ...edge,
                 source: idMap[edge.source],
                 target: idMap[edge.target],
             }))
-            .filter((edge:Edge) => edge.source && edge.target); // 移除没有有效节点的连线
+            .filter((edge: Edge) => edge.source && edge.target); // 移除没有有效节点的连线
 
         // 返回更新后的数据对象
         return {
@@ -713,22 +729,6 @@ const MyFlow = () => {
         setSelectionEdges((event as any).edges);
     };
 
-    const nodeColor = (node: any) => {
-        switch (node.type) {
-            case 'StartNode':
-                return '#6ede87';
-            case 'JudgeNode':
-                return '#f6f63b';
-            case 'ProcessNode':
-                return '#06e1ae';
-            case 'StopNode':
-                return '#f63e3b';
-            case 'SwitchNode':
-                return '#f63bdd';
-            default:
-                return '#ff0072';
-        }
-    };
     const edgesAnimated = () => {
         setIsEdgeAnimated(!isEdgeAnimated);
         const updatedEdges = edges.map((edge) => ({
@@ -738,19 +738,19 @@ const MyFlow = () => {
         setEdges(updatedEdges);
     };
     const onLayout = useCallback((direction: string) => {
-            const {
-                nodes: layoutedNodes,
-                edges: layoutedEdges
-            } = getLayoutedElements(nodes as Node[], edges as Edge[], direction);
+        const {
+            nodes: layoutedNodes,
+            edges: layoutedEdges
+        } = getLayoutedElements(nodes as Node[], edges as Edge[], direction);
 
-            setNodes([...layoutedNodes] as Node[]);
-            setEdges([...layoutedEdges] as Edge[]);
-            reactFlowInstance.fitView();
-        },
+        setNodes([...layoutedNodes] as Node[]);
+        setEdges([...layoutedEdges] as Edge[]);
+        reactFlowInstance.fitView();
+    },
         [nodes, edges, setNodes, setEdges, reactFlowInstance]
     );
     return (
-        <div style={{ width: '98vw', height: '98vh',padding:0 }}>
+        <div style={{ width: '100vw', height: '100vh', padding: 0 }}>
             <ReactFlow
                 nodes={nodes}
                 nodeTypes={nodeTypes}
@@ -770,10 +770,10 @@ const MyFlow = () => {
                 onDrop={onDrop}
                 onSelectionChange={onSelectionChange}
                 selectNodesOnDrag={true}
-                style={{ backgroundColor: '#212B3B' }}
                 fitView
                 minZoom={0.125}  // 最小缩放倍数
                 maxZoom={1.5}
+                className={`myflow ${theme}`}
             >
                 <Background
                     color="gray" // 网格线的颜色
@@ -781,9 +781,8 @@ const MyFlow = () => {
                     //  size={0.1}   // 网格线的宽度
                     variant={BackgroundVariant.Dots}
                 />
-                <MiniMap nodeColor={nodeColor} nodeStrokeWidth={3} zoomable pannable />
                 <Controls />
-                <div style={{ position: 'relative', zIndex: 1000, display: 'flex',alignItems: 'center',flexWrap: 'wrap'}}>
+                <div style={{ position: 'relative', zIndex: 1000, display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
                     {/* <button onClick={importNodeToExtension}>导入</button>
                     <button onClick={createNewNodeFile}>新建</button>
                     <button onClick={openProjectToExtension}>打开项目</button>
@@ -793,9 +792,9 @@ const MyFlow = () => {
                     <button onClick={edgesAnimated}>边线动画</button>
                     <button onClick={() => onLayout("TB")}>纵向布局</button>
                     <button onClick={() => onLayout("LR")}>横向布局</button>
-                    <button onClick={() => logInfo()}>输出LOG</button>*/ }
+                        <button onClick={() => logInfo()}>输出LOG</button>*/}
                 </div>
-                <NodeBar />
+                <NodeBar theme={theme} />
             </ReactFlow>
         </div>
     );

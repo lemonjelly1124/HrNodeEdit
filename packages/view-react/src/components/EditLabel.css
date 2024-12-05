@@ -6,18 +6,27 @@
     outline-color: transparent;
     font-size: 12px;
     text-transform: uppercase;
+    font-weight: 600;
+    border-radius: 2px;
+    width: 100px;
+}
+
+.input-title:focus.dark {
     color: #E2E8F0;
     background-color: #1A202C;
     border: 1px solid #3A4D6D;
-    font-weight: 750;
-    border-radius: 2px;
-    width: 100px;
+}
+
+.input-title:focus.light {
+    color: #4a4c4f;
+    background-color: #c9c9ca;
+    border: 1px solid #6b6b6b;
 }
 
 .input-content:focus {
     outline-color: transparent;
     font-size: 9px;
-    color: #718096;
+    color: #E2E8F0;
     background-color: #1A202C;
     border: 1px solid #3A4D6D;
     font-weight: 750;
@@ -26,11 +35,32 @@
     width: 100px;
 }
 
+.input-content:focus.dark {
+    color: #718096;
+    background-color: #1A202C;
+    border: 1px solid #3A4D6D;
+}
+
+.input-content:focus.light {
+    font-size: 9px;
+    color: #718096;
+    background-color: #c9c9ca;
+    border: 1px solid #6b6b6b;
+
+}
+
 .label-title {
-    font-weight: 500;
-    color: #E2E8F0;
+    font-weight: 600;
     font-size: 12px;
     align-items: center;
+}
+
+.label-title.dark {
+    color: #E2E8F0;
+}
+
+.label-title.light {
+    color: #4a4c4f;
 }
 
 .label-content-div {
@@ -41,5 +71,5 @@
     color: #718096;
     font-weight: 750;
     font-size: 9px;
-
+    line-height: 1;
 }

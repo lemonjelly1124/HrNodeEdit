@@ -1,3 +1,7 @@
-.reactflow{
-    background-color: var(--dark-flowbackground);
+.myflow.dark{
+    background-color: #1F1F1F;
+}
+
+.myflow.light {
+    background-color: #FFFFFF;
 }

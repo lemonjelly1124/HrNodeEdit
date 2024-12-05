@@ -4,14 +4,16 @@ import './EditLabel.css';
 interface EditTitleProps {
     Value?: string; // 可选的初始值
     type?: string;
+    theme?: string;
     onEdit?: (newValue: string) => void;
     onValueChanged?: (oldValue:string,newValue: string) => void;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 let oldtitle:string;
-const EditLabel: React.FC<EditTitleProps> = ({Value,type,onEdit,onValueChanged}) => {
+const EditLabel: React.FC<EditTitleProps> = (props) => {
     const [isEditing, setIsEditing] = useState(false);
+    const { Value, type, theme, onEdit, onValueChanged } = props;
 
     const handleDoubleClick = (event: React.MouseEvent) => {
         event.stopPropagation();
@@ -50,11 +52,11 @@ const EditLabel: React.FC<EditTitleProps> = ({Value,type,onEdit,onValueChanged})
                     onBlur={handleBlur}
                     onKeyDown={handleKeyDown}
                     autoFocus
-                    className={type==="title"?'input-title':'input-content'}
+                    className={type === "title" ? `input-title ${theme}` : `input-content ${theme}`}
                 />
             ) : (
                     <div className='label-content-div'>
-                    <label onDoubleClick={handleDoubleClick} className={type==="title"?'label-title':'label-content'}>{Value}</label>
+                        <label onDoubleClick={handleDoubleClick} className={type === "title" ? `label-title ${theme}` : `label-content`}>{Value}</label>
                 </div>
             )}
         </div>

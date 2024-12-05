@@ -14,6 +14,11 @@
 .nodestate input[type="checkbox"] {
     transform: scale(0.8);
     margin-right: 2px;
-    accent-color: #3376D0;
     outline: none;
+}
+.nodestate input[type="checkbox"].dark {
+    accent-color: #3376D0;
+}
+.nodestate input[type="checkbox"].light {
+    accent-color: #699FE9;
 }

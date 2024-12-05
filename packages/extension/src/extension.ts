@@ -50,6 +50,15 @@ export function activate(context: ExtensionContext) {
             }
         }
     });
+
+    //监听vscode主题切换事件
+    const themeLe = vscode.workspace.onDidChangeConfiguration((e) => {
+        if (e.affectsConfiguration('workbench.colorTheme')) {
+            webviewPanels.forEach(panel => {
+                panel.webview.postMessage({ type: 'settheme', data: getTheme() });
+            });
+        }
+    });
     context.subscriptions.push(panelViewDisposable, panelLe);
 }
 
@@ -137,11 +146,14 @@ async function openMainThreadView(context: ExtensionContext, path: string) {
         projectData = await readProjectData(projectPath);
         const mainElement = projectData.find((element: any) => element.parentID === 'main');
         const nodes = await getSubThreadNodes();
+        const theme=await getTheme();
         await delay(500);
         treeViewProvider.updateJsonData(projectData);       //刷新节点树
         checkNodeData();
+        panel.webview.postMessage({ type: 'settheme', data: theme });
         panel.webview.postMessage({ type: 'openprojectback', path: projectPath, data: mainElement, threadid: 'main' });
         panel.webview.postMessage({ type: 'setnodeoptions', data: nodes });
+        
     }
     return '';
 }
@@ -404,7 +416,9 @@ async function openSubThread(context: ExtensionContext, data: any,centerNodeid?:
     );
     const nodes = await getSubThreadNodes();
     const mainElement = projectData.find((element: any) => element.parentID === threadid);
+    const theme = await getTheme();
     await delay(200);
+    panel.webview.postMessage({ type: 'settheme', data: theme });
     panel.webview.postMessage({ type: 'openprojectback', path: projectPath, data: mainElement, threadid: threadid });
     panel.webview.postMessage({ type: 'setnodeoptions', data: nodes });
     if (centerNodeid && centerNodeid !== 'main') {
@@ -612,8 +626,17 @@ async function setFileIcon(context: ExtensionContext) {
     } else {
         vscode.window.showErrorMessage('读取settings.json文件失败');
     }
-
-
 }
 
+//获取vscode当前主题
+function getTheme() {
+    const colorTheme = vscode.workspace.getConfiguration('workbench').get('colorTheme');
+    let theme = 'light';
+    if ((colorTheme as string).toLowerCase().includes('dark')) { 
+        theme = 'dark';
+    } else if ((colorTheme as string).toLowerCase().includes('light')) {
+        theme = 'light';
+    }
+    return theme;
+}
 export function deactivate() { }

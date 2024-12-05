@@ -143,7 +143,7 @@ export const JudgeNode = ({ data, id,selected }: any) => {
     };
 
     return (
-        <div className={selected ? 'node-selected' : 'node'} onContextMenu={handleContextMenu} >
+        <div className={selected ? `node-selected ${data.theme}` : `node ${data.theme}`} onContextMenu={handleContextMenu} >
             <div className="node-top" onDoubleClick={handleDoubleClick}>
                 {data.isSwapped && <div className="node-targetlabel">
                     <label node-targetlabel>Y</label>
@@ -152,30 +152,30 @@ export const JudgeNode = ({ data, id,selected }: any) => {
                 <div className="node-title-div">
                     <div className='node-title'>
                         <img src={judgeIconPath} className='node-icon' />
-                        <EditLabel Value={title} type="title" onEdit={editTitle} onValueChanged={handleTitleChanged} />
+                        <EditLabel theme={data.theme} Value={title} type="title" onEdit={editTitle} onValueChanged={handleTitleChanged} />
                     </div>
-                        <EditLabel Value={content} type="content" onEdit={editContent} onValueChanged={handleContentChanged} />
+                        <EditLabel theme={data.theme} Value={content} type="content" onEdit={editContent} onValueChanged={handleContentChanged} />
                 </div>
                 {!data.isSwapped && <div className="node-targetlabel">
                     <label node-targetlabel>Y</label>
                     <label node-targetlabel>N</label>
                 </div>}
             </div>
-            <div className="node-state">
-                <NodeState isRunning={Running} isSubThread={Subthread} isNormal={Normal} onStatusChange={handleStatusChange} />
+            <div className={`node-state ${data.theme}`}>
+                <NodeState theme={data.theme} isRunning={Running} isSubThread={Subthread} isNormal={Normal} onStatusChange={handleStatusChange} />
             </div>
             <Handle className="node-handle-s" type="source" position={data.isSwapped ? Position.Left : Position.Right} style={{ top: '32px' }} isConnectable={true} onMouseEnter={onRightHandleClick} />
             <Handle className="node-handle-s" type="source" position={data.isSwapped ? Position.Left : Position.Right} style={{ top: '62px' }} isConnectable={true} onMouseEnter={onRightHandleClick} />
             <Handle className="node-handle-t" type="target" position={data.isSwapped ? Position.Right : Position.Left} style={{ top: '47px' }} isConnectable={true} onMouseEnter={onLeftHandleClick} />
             {isVisible && (
                 <div ref={componentRef} onBlur={handleComponentBlur} tabIndex={0} style={{ position: 'relative' }}>
-                    <NodeMenu x={popup.x} y={popup.y} isStopHide={popup.isStopHide} isStartHide={popup.isStartHide} onButtonClick={nodeListClick} />
+                    <NodeMenu theme={data.theme} x={popup.x} y={popup.y} isStopHide={popup.isStopHide} isStartHide={popup.isStartHide} onButtonClick={nodeListClick} />
                 </div>
             )}
             {isSubBtnVisible && (
                 <div ref={componentRef} onBlur={handleComponentBlur} tabIndex={0} style={{ position: 'relative' }}>
-                    <SubButton x={-30} y={20} imgPath={threadIconPath} text="子线程" onButtonClick={handleSubBtnClick} />
-                    <SubButton x={-30} y={90} imgPath={flipIconPath} text="翻转" onButtonClick={handleSwitchBtnClick} />
+                    <SubButton theme={data.theme} x={-30} y={20} imgPath={threadIconPath} text="子线程" onButtonClick={handleSubBtnClick} />
+                    <SubButton theme={data.theme} x={-30} y={90} imgPath={flipIconPath} text="翻转" onButtonClick={handleSwitchBtnClick} />
                 </div>
             )}
         </div>

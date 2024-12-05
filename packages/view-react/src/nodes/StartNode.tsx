@@ -123,27 +123,26 @@ export const StartNode = ({ data, id, selected }: any) => {
         }
     };
     return (
-        <div className={selected ? 'node-selected' : 'node'} onContextMenu={handleContextMenu} >
+        <div className={selected ? `node-selected ${data.theme}` : `node ${data.theme}`} onContextMenu={handleContextMenu} >
             <div className='node-title' onDoubleClick={handleDoubleClick}>
                 <img src={startIconPath} className='node-icon' />
-                <EditLabel Value={title} type="title" onEdit={editTitle} onValueChanged={handleTitleChanged} />
+                <EditLabel theme={data.theme} Value={title} type="title" onEdit={editTitle} onValueChanged={handleTitleChanged} />
             </div>
             <div onDoubleClick={handleDoubleClick}>
-                <EditLabel Value={content} type="content" onEdit={editContent} onValueChanged={handleContentChanged} />
+                <EditLabel theme={data.theme} Value={content} type="content" onEdit={editContent} onValueChanged={handleContentChanged} />
             </div>
-            <div className="node-state">
-                <NodeState isRunning={Running} isSubThread={Subthread} isNormal={Normal} onStatusChange={handleStatusChange} isSubBtnHide={true} />
+            <div className={`node-state ${data.theme}`}>
+                <NodeState theme={data.theme} isRunning={Running} isSubThread={Subthread} isNormal={Normal} onStatusChange={handleStatusChange} isSubBtnHide={true} />
             </div>
-
             <Handle className="node-handle-s" type="source" position={data.isSwapped ? Position.Left : Position.Right} style={{ top: '50%' }} isConnectable={true} onMouseEnter={onHandleClick} />
             {isVisible && (
                 <div ref={componentRef} onBlur={handleComponentBlur} tabIndex={0} style={{ position: 'relative' }}>
-                    <NodeMenu x={popup.x} y={popup.y} isStopHide={popup.isStopHide} onButtonClick={nodeListClick} />
+                    <NodeMenu x={popup.x} y={popup.y} theme={data.theme} isStopHide={popup.isStopHide} onButtonClick={nodeListClick} />
                 </div>
             )}
             {isSubBtnVisible && (
                 <div ref={componentRef} onBlur={handleComponentBlur} tabIndex={0} style={{ position: 'relative' }}>
-                    <SubButton x={-30} y={57} imgPath={flipIconPath} text="翻转" onButtonClick={handleSwitchBtnClick} />
+                    <SubButton theme={data.theme} x={-30} y={57} imgPath={flipIconPath} text="翻转" onButtonClick={handleSwitchBtnClick} />
                 </div>
             )}
         </div>

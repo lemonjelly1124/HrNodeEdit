@@ -5,9 +5,6 @@ import { OverNode } from "./OverNode";
 import { JudgeNode } from "./JudgeNode";
 import { SwitchNode } from "./SwitchNode";
 
-
-// type cNode = Node | ProcessNodeData;
-
 export const initialNodes= [
 ];
 

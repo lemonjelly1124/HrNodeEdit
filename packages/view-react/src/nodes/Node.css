@@ -1,22 +1,40 @@
 .node {
-    padding: 1px;
     border-radius: 10px;
     width: 150px;
-    background-color: #1A202C;
     border: 1px solid transparent;
 }
 
-.node-selected {
-    padding: 1px;
-    border-radius: 10px;
-    width: 150px;
-    background-color: #2D3748;
-    border: 1px solid #3A4D6D;
+.node.dark {
+    background-color: #181818;
 }
 
-.node:hover {
-    background-color: #2D3748;
-    border: 1px solid #3A4D6D;
+.node.light {
+    background-color: #f1f1f1;
+}
+
+.node-selected {
+    border-radius: 10px;
+    width: 150px;
+}
+
+.node-selected.dark {
+    background-color: #242a34;
+    border: 1px solid #4d5667;
+}
+
+.node-selected.light {
+    background-color: #eaeaea;
+    border: 1px solid #c0c0c0;
+}
+
+.node:hover.dark {
+    background-color: #242a34;
+    border: 1px solid #4d5667;
+}
+
+.node:hover.light {
+    background-color: #eaeaea;
+    border: 1px solid #c0c0c0;
 }
 
 .node-top {
@@ -62,10 +80,17 @@
     padding-right: 5px;
     padding-top: 1px;
     padding-bottom: 3px;
-    background-color: #151A23;
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
     text-align: center;
+}
+
+.node-state.dark {
+    background-color: #111214;
+}
+
+.node-state.light {
+    background-color: #DEDEDE;
 }
 
 .node-switch-btn-div {
@@ -121,14 +146,10 @@
 }
 
 .node-handle-s:hover {
-    position: absolute;
     min-width: 9px;
     min-height: 9px;
     width: 10px;
     height: 10px;
-    background-color: #967172;
-    border: 1px solid #FFFFFF;
-    border-radius: 100%;
 }
 
 .node-handle-t {
@@ -143,12 +164,8 @@
 }
 
 .node-handle-t:hover {
-    position: absolute;
     min-width: 9px;
     min-height: 9px;
     width: 10px;
     height: 10px;
-    background-color: #719675;
-    border: 1px solid #FFFFFF;
-    border-radius: 100%;
 }

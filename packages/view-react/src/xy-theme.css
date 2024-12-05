@@ -1,0 +1,20 @@
+.react-flow {
+    --testcolor:red;
+    
+
+    /***************dark***************/
+
+    /***************dark***************/
+
+    /***************light***************/
+    --light-titletext-color: #1E1E1E;
+    --light-node-background: #F8F8F8;
+    --light-node-hover-background: #c6c4c4;
+    --light-node-hover-border: #dddddd;
+
+    --light-nodestate-background: #DEDEDE;
+    --light-nodelist-background: #F8F8F8;
+    --light-subbutton-background: #F8F8F8;
+
+    /***************light***************/
+}

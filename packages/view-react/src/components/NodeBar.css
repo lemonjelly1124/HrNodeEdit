@@ -1,9 +1,15 @@
-.nodebar {
-    background-color: #1A202C;
+.nodebar{
+
     border-radius: 8px;
     width: 200px;
     position: relative;
     z-index: 1000;
+}
+.nodebar.dark {
+    background-color: #181818;
+}
+.nodebar.light {
+    background-color: #F8F8F8;
 }
 
 .nodebar-title {
@@ -32,15 +38,20 @@
 }
 
 .nodebar-content {
-    background-color: #1A202C;
     border-bottom-left-radius: 15px;
     border-bottom-right-radius: 15px;
+}
+.nodebar-content.dark {
+    background-color: #181818;
+}
+.nodebar-content.light {
+    background-color: #F8F8F8;
 }
 
 .nodebar-content-span {
     padding-left: 15px;
     font-size: 16px;
-    color: #A0AEC0;
+    color: #8d9aaa;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
@@ -53,15 +64,27 @@
     gap: 15px;
 }
 .nodebar-content-item:hover {
-    background-color: #2D3748;
     border-radius: 8px;
 }
 
-.nodebar-content-item-text {
-    color: #E2E8F0;
+.nodebar-content-item:hover.dark {
+    background-color: #2D3748;
+}
+
+.nodebar-content-item:hover.light {
+    background-color: #d6dce7;
+}
+
+.nodebar-content-item-text{
     font-size: 16px;
     font-weight: bold;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+.nodebar-content-item-text.dark {
+    color: #E2E8F0;
+}
+.nodebar-content-item-text.light {
+    color: #1E1E1E;
 }
 
 .nodebar-content-item-icon {

@@ -34,6 +34,9 @@ const SideBarView = () => {
                 <button className='searchnode' onClick={onSearchClick}>搜索</button>
                 <button className='searchnode' onClick={onClearClick}>全部</button>
             </div>
+            <div>
+                <button className='searchnode' onClick={() => vscode?.postMessage({ command: 'importnode' })}>添加节点</button>
+            </div>
         </div>
     );
 }

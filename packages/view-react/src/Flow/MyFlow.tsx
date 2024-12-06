@@ -442,6 +442,7 @@ const MyFlow = () => {
         }
     };
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const onVsCodeThemeChange = (theme: string) => {
         setTheme(theme);
         setNodes((nodes) =>
@@ -614,7 +615,7 @@ const MyFlow = () => {
         return () => {
             window.removeEventListener('message', handleMessage);
         };
-    }, [addHistory, centerNode, clearNode, handleNodeClick, handleNodeTitleChange, handleSwapBtnClick, onNodeListClickHandle, onNodeStateHandle, projectDir, saveNodeToExtension, setEdges, setNodes, setPanelActive, setProjectPath, subThreadToExtension, theme, updateOptions]);
+    }, [addHistory, centerNode, clearNode, handleNodeClick, handleNodeTitleChange, handleSwapBtnClick, onNodeListClickHandle, onNodeStateHandle, onVsCodeThemeChange, projectDir, saveNodeToExtension, setEdges, setNodes, setPanelActive, setProjectPath, subThreadToExtension, theme, updateOptions]);
 
     useEffect(() => {
         if (historyArr.length == 0) {
@@ -697,17 +698,14 @@ const MyFlow = () => {
 
     const randomizeNodeIds = (data: any): any => {
         const { nodes, edges } = data;
-
         // 创建一个映射表来存储旧 ID 到新随机 ID 的映射
         const idMap: Record<string, string> = {};
-
         // 为每个节点生成新的随机 ID，并更新节点 ID
         const updatedNodes = nodes.map((node: Node) => {
             const newId = generateUniqueId();
             idMap[node.id] = newId;
             return { ...node, id: newId };
         });
-
         // 更新连线的 source 和 target，并过滤无效连线
         const updatedEdges = edges
             .map((edge: Edge) => ({
@@ -716,7 +714,6 @@ const MyFlow = () => {
                 target: idMap[edge.target],
             }))
             .filter((edge: Edge) => edge.source && edge.target); // 移除没有有效节点的连线
-
         // 返回更新后的数据对象
         return {
             nodes: updatedNodes,

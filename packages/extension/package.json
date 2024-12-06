@@ -1,9 +1,9 @@
 {
     "name": "extension",
-    "displayName": "vscode-webview-extension-example",
-    "description": "Vscode 的 extension webview 开发示例，提供 Vue 和 React 实现",
-    "version": "1.0.1",
-    "publisher": "liutaigang",
+    "displayName": "hr-nodeeditor",
+    "description": "VsCode插件,节点编辑器",
+    "version": "1.0.0",
+    "publisher": "lj",
     "engines": {
         "vscode": "^1.84.0"
     },
@@ -12,12 +12,12 @@
     ],
     "repository": {
         "type": "git",
-        "url": "git@github.com:liutaigang/vscode-webview-extension-example.git"
+        "url": "https://github.com/lemonjelly1124/HrNodeEdit.git"
     },
     "keywords": [
         "webview",
         "extension",
-        "example"
+        "nodeeditor"
     ],
     "activationEvents": [
         "*"

@@ -37,7 +37,7 @@ export class SimpleTreeDataProvider implements vscode.TreeDataProvider<MyTreeIte
 
         treeItem.tooltip = `节点ID: ${jsonData.id}`;
         treeItem.command = { // 点击图标时触发的命令
-            command: 'extension.handleButtonClick',
+            command: 'treeview.handleButtonClick',
             title: 'Handle Button Click',
             arguments: [jsonData.id] // 将节点 ID 传递给命令
         };

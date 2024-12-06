@@ -1,7 +1,7 @@
 {
-  "name": "vscode-webview-extension-example",
+  "name": "hr-nodeeditor",
   "version": "1.0.0",
-  "description": "Vscode 的 extension webview 开发示例，提供 Vue 和 React 实现",
+  "description": "节点编辑器",
   "main": "index.js",
   "scripts": {
     "dev": "run-p dev:view-*",

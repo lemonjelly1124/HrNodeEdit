@@ -21,8 +21,11 @@ export class ViewProviderSidebar extends AbstractViewProvider {
 
         webview.onDidReceiveMessage(message => {
             switch (message.command) {
-                case 'searchNode':
-                    vscode.commands.executeCommand('extension.searchNode', message.data);
+                case 'searchnode':
+                    vscode.commands.executeCommand('reactside1.searchnode', message.data);
+                    break;
+                case 'importnode':
+                    vscode.commands.executeCommand('reactside1.importnode');
                     break;
                 default:
                     break;

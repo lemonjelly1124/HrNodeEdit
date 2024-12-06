@@ -65,7 +65,6 @@ export function activate(context: ExtensionContext) {
 async function createPrimarySidebarView(context: ExtensionContext) { 
     const { callables, subscribables } = getControllers();
 
-    
     webViewProvider = new ViewProviderSidebar(context, { callables, subscribables });
     //注册sidebar webview视图
     window.registerWebviewViewProvider('sidebar-view-container',webViewProvider,{ webviewOptions: { retainContextWhenHidden: true } });
@@ -73,12 +72,15 @@ async function createPrimarySidebarView(context: ExtensionContext) {
     treeViewProvider = new SimpleTreeDataProvider(context);
     vscode.window.registerTreeDataProvider('treeView', treeViewProvider);
 
-    vscode.commands.registerCommand('extension.searchNode', (nodeId: string) => { 
+    vscode.commands.registerCommand('reactside1.searchnode', (nodeId: string) => { 
         treeViewProvider.updateJsonData(projectData, nodeId);
     });
-
-    vscode.commands.registerCommand('extension.handleButtonClick', async (nodeId: string) => {
+    vscode.commands.registerCommand('reactside1.importnode', async () => {
+        //const jsonData = await openFileAndReadJson();
         
+    });
+
+    vscode.commands.registerCommand('treeview.handleButtonClick', async (nodeId: string) => {
         wayTitle = "";
         wayId = "";
         searchNodeByID(nodeId);
@@ -90,11 +92,8 @@ async function createPrimarySidebarView(context: ExtensionContext) {
         const ids = wayId.split('->');
         const parentId = ids[ids.length - 2];
         
-
         openSubThread(context, { id: parentId, title: partrnttitle },nodeId);
     });
-
-    
 
 }
 async function openMainThreadView(context: ExtensionContext, path: string) {
@@ -342,7 +341,7 @@ async function openFileInSplitEditor(filePath: string) {
         saveProjetData(filePath, "");
     }
     // 获取当前活动的编辑器
-    const activeEditor = vscode.window.activeTextEditor;
+    // const activeEditor = vscode.window.activeTextEditor;
     // 获取所有可见的编辑器
     const visibleEditors = vscode.window.visibleTextEditors;
     // 检查是否已经拆分
@@ -574,8 +573,6 @@ async function nodeTitleChange(node: any) {
     const newFile = node.newtitle + '_' + node.id + '.py';
     const projectDir = projectPath.substring(0, projectPath.lastIndexOf('\\'));
     const files = fs.readdirSync(projectDir);
-
-
 
     const openEditors = vscode.window.visibleTextEditors;
     for (const editor of openEditors) {

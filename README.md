@@ -25,7 +25,7 @@ pnpm dev
 脚本执行完成后：
 
 - 按 F5 开启调试
-- 调试窗口打开后，点击 activitybar 上的图标。
+- 调试窗口打开后，点击左侧activitybar 上的图标。
 
 # 特点
 

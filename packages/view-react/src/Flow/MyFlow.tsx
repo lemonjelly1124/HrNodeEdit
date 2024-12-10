@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-case-declarations */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import ReactFlow, { addEdge, Connection, Background, MiniMap, Controls, useEdgesState, useNodesState, BackgroundVariant } from 'reactflow';
+import ReactFlow, { addEdge, Connection, Background,Controls, useEdgesState, useNodesState, BackgroundVariant } from 'reactflow';
 import type { Node as ReactFlowNode } from "reactflow";
 import 'reactflow/dist/style.css';
 import { initialNodes, nodeTypes } from "../nodes";
@@ -116,21 +116,12 @@ const MyFlow = () => {
     const [historyState, setHistoryState] = useState(0);    //当状态为0和1时表示操作会被记录，为1时表示按ctrl键保存最新状态,为2时表示跳过下次因操作触发的保存。
     const [historyArr, setHistoryArr] = useState<string[]>([]);
     const [isEdgeAnimated, setIsEdgeAnimated] = useState(false);
-    const [selectionNodes, setSelectionNodes] = useState([]);
-    const [selectionEdges, setSelectionEdges] = useState([]);
+    const [selectionNodes, setSelectionNodes] = useState<Node[]>([]);
+    const [selectionEdges, setSelectionEdges] = useState<Edge[]>([]);
     const { screenToFlowPosition } = useReactFlow();
     const vscode = getVsCodeApi();
     const reactFlowInstance = useReactFlow();
     const [options, setOptions] = useState([]);
-    const handleItemSelected = (id: number, title: string) => {
-        vscode.postMessage({
-            type: 'subthread',
-            data: {
-                id: id,
-                title: title
-            },
-        });
-    };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const updateOptions = (nodes: any) => {
@@ -379,7 +370,11 @@ const MyFlow = () => {
 
 
     const logInfo = () => {
-        console.log(theme);
+
+        vscode.postMessage({
+            type: 'loginfo',
+            data: {}
+        });
     }
 
     const onDragOver = useCallback((event: React.DragEvent<HTMLDivElement>) => {
@@ -631,7 +626,18 @@ const MyFlow = () => {
             } else if (event.ctrlKey && (event.key === 'c' || event.key === 'C')) {
                 console.log('Ctrl+C');
                 encryptAndCopyToClipboard(JSON.stringify({ nodes: selectionNodes, edges: selectionEdges }));
-            } else if (event.ctrlKey && (event.key === 'v' || event.key === 'V')) {
+            } else if (event.ctrlKey && (event.key === 'x' || event.key === 'X')) { 
+                console.log('Ctrl+X');
+                encryptAndCopyToClipboard(JSON.stringify({ nodes: selectionNodes, edges: selectionEdges }));
+                for(const node of selectionNodes){
+                    setNodes((nodes) => nodes.filter((n) => n.id !== node.id));
+                }
+                for(const edge of selectionEdges){
+                    setEdges((edges) => edges.filter((e) => e.id !== edge.id));
+                }
+                addHistory();
+            }
+            else if (event.ctrlKey && (event.key === 'v' || event.key === 'V')) {
                 console.log('Ctrl+V');
                 const copiedStr = await decryptFromClipboard();
                 const copiedObj = JSON.parse(copiedStr);
@@ -640,7 +646,7 @@ const MyFlow = () => {
                     return {
                         ...node,
                         position: { x: node.position.x + 150, y: node.position.y + 150 },
-                        selected: false,
+                        selected: true,
                         data: {
                             ...node.data,
                             theme: theme,
@@ -658,11 +664,12 @@ const MyFlow = () => {
                 setEdges((edges) => edges.concat(newEdges));
             } else if (event.ctrlKey && !event.shiftKey && (event.key === 's' || event.key === 'S')) {
                 console.log('Ctrl+S');
-                saveNodeToExtension();
+                //saveNodeToExtension();
+                saveAllNodeToExtension();
             }
             else if (event.ctrlKey && event.shiftKey && (event.key === 's' || event.key === 'S')) {
                 console.log('Ctrl+Shift+S');
-                saveAllNodeToExtension();
+                //saveNodeToExtension();
             } else if (event.ctrlKey && (event.key === 'z' || event.key === 'Z')) {
                 console.log('Ctrl+Z');
                 if (historyIndex > 1) {
@@ -713,7 +720,6 @@ const MyFlow = () => {
                 source: idMap[edge.source],
                 target: idMap[edge.target],
             }))
-            .filter((edge: Edge) => edge.source && edge.target); // 移除没有有效节点的连线
         // 返回更新后的数据对象
         return {
             nodes: updatedNodes,
@@ -788,8 +794,8 @@ const MyFlow = () => {
                     <button onClick={() => saveCodeToExtension('', '')}>保存所有代码修改</button>
                     <button onClick={edgesAnimated}>边线动画</button>
                     <button onClick={() => onLayout("TB")}>纵向布局</button>
-                    <button onClick={() => onLayout("LR")}>横向布局</button>
-                        <button onClick={() => logInfo()}>输出LOG</button>*/}
+                    <button onClick={() => onLayout("LR")}>横向布局</button>*/
+                        <button onClick={() => logInfo()}>输出LOG</button> }
                 </div>
                 <NodeBar theme={theme} />
             </ReactFlow>

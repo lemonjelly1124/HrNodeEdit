@@ -11,7 +11,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import os = require('os');
 import { SimpleTreeDataProvider } from './SimpleTreeDataProvider';
-//import CryptoJS = require("crypto-js");
+
+import CryptoJS = require('crypto-js');
 
 let projectPath = '';
 let projectData: any;
@@ -19,7 +20,7 @@ let webviewPanels: vscode.WebviewPanel[] = [];
 let isSaveNodeToFile = true;
 let isSubThreadActived = false;
 let isMainThreadActived = false;
-
+const secretKey = 'secretkey-hr1234';
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 let treeViewProvider: SimpleTreeDataProvider;
 let webViewProvider: ViewProviderSidebar;
@@ -62,22 +63,22 @@ export function activate(context: ExtensionContext) {
     context.subscriptions.push(panelViewDisposable, panelLe);
 }
 
-async function createPrimarySidebarView(context: ExtensionContext) { 
+async function createPrimarySidebarView(context: ExtensionContext) {
     const { callables, subscribables } = getControllers();
 
     webViewProvider = new ViewProviderSidebar(context, { callables, subscribables });
     //注册sidebar webview视图
-    window.registerWebviewViewProvider('sidebar-view-container',webViewProvider,{ webviewOptions: { retainContextWhenHidden: true } });
+    window.registerWebviewViewProvider('sidebar-view-container', webViewProvider, { webviewOptions: { retainContextWhenHidden: true } });
     //注册sidebar treeview视图
     treeViewProvider = new SimpleTreeDataProvider(context);
     vscode.window.registerTreeDataProvider('treeView', treeViewProvider);
 
-    vscode.commands.registerCommand('reactside1.searchnode', (nodeId: string) => { 
+    vscode.commands.registerCommand('reactside1.searchnode', (nodeId: string) => {
         treeViewProvider.updateJsonData(projectData, nodeId);
     });
     vscode.commands.registerCommand('reactside1.importnode', async () => {
         //const jsonData = await openFileAndReadJson();
-        
+
     });
 
     vscode.commands.registerCommand('treeview.handleButtonClick', async (nodeId: string) => {
@@ -88,16 +89,16 @@ async function createPrimarySidebarView(context: ExtensionContext) {
         wayId = "main->" + wayId.substring(0, wayId.length - 2);
         const titles = wayTitle.split('->');
         const partrnttitle = titles[titles.length - 2];
-        
+
         const ids = wayId.split('->');
         const parentId = ids[ids.length - 2];
-        
-        openSubThread(context, { id: parentId, title: partrnttitle },nodeId);
+
+        openSubThread(context, { id: parentId, title: partrnttitle }, nodeId);
     });
 
 }
 async function openMainThreadView(context: ExtensionContext, path: string) {
-    
+
     webviewPanels.forEach(panel => {
         panel.webview.postMessage({ type: 'panelactive', data: 'main' });
     });
@@ -144,16 +145,17 @@ async function openMainThreadView(context: ExtensionContext, path: string) {
     if (path !== '') {
         projectPath = path;
         projectData = await readProjectData(projectPath);
+        
         const mainElement = projectData.find((element: any) => element.parentID === 'main');
         const nodes = await getSubThreadNodes();
-        const theme=await getTheme();
+        // console.log(nodes);
+        const theme =  getTheme();
         await delay(500);
         treeViewProvider.updateJsonData(projectData);       //刷新节点树
         checkNodeData();
         panel.webview.postMessage({ type: 'settheme', data: theme });
         panel.webview.postMessage({ type: 'openprojectback', path: projectPath, data: mainElement, threadid: 'main' });
         panel.webview.postMessage({ type: 'setnodeoptions', data: nodes });
-        
     }
     return '';
 }
@@ -179,7 +181,7 @@ async function handleWebviewMessage(
 ) {
     switch (message.type) {
         case 'loginfo':
-            await setFileIcon(context);
+            console.log(projectData);
             break;
         case 'createnodefile':
             await createNewFile(panel);
@@ -209,6 +211,7 @@ async function handleWebviewMessage(
             break;
         case 'saveallnode':
             await saveAllNode();
+            checkNodeData();    //校验数据后保存所有节点数据
             break;
         case 'nodestatechanged':
             await nodeStatChanged(message.data);
@@ -372,11 +375,11 @@ async function openFileInSplitEditor(filePath: string) {
         vscode.window.showErrorMessage(`打开文件失败: ${error.message}`);
     });
 }
-async function openSubThread(context: ExtensionContext, data: any,centerNodeid?:string) {
+async function openSubThread(context: ExtensionContext, data: any, centerNodeid?: string) {
 
     webviewPanels.forEach(panel => {
         panel.webview.postMessage({ type: 'panelactive', data: data.id });
-        if (centerNodeid&&centerNodeid!=='main') {
+        if (centerNodeid && centerNodeid !== 'main') {
             panel.webview.postMessage({ type: 'setnodetocenter', data: centerNodeid });
         }
     });
@@ -451,25 +454,27 @@ async function saveNode(data: any) {
     }
 
     if (isSaveNodeToFile) {
-        saveProjetData(projectPath, projectData);
-        treeViewProvider.updateJsonData(projectData);
         vscode.window.showInformationMessage('保存节点成功');
     }
 }
 
 async function logInfo(_params: any) {
+    console.log(projectData);
 }
-//保存所有标签页的节点数据
+//保存所有标签页的节点数据,通知所有打开的标签页保存自己的数据
 async function saveAllNode() {
     isSaveNodeToFile = false;
-    webviewPanels.forEach(panel => {
+    webviewPanels.forEach(async panel => {
+        await delay(100);
         if (panel && panel.webview) {
             panel.webview.postMessage({ type: 'saveallnodeback', data: {} });
         }
     });
-    await delay(2000);
+
+    await delay(500);
     isSaveNodeToFile = true;
-    saveProjetData(projectPath, projectData);
+    //saveProjetData(projectPath, projectData);
+    treeViewProvider.updateJsonData(projectData);
 }
 
 
@@ -487,6 +492,18 @@ async function nodeStatChanged(data: any) {
                 }
             }
             break;
+        }
+    }
+    if (data.node.data.isSubthread) {
+        let isThreadExit = false;
+        for(const element of projectData){
+            if(element.parentID===data.node.id){
+                isThreadExit = true;
+                break;
+            }
+        }
+        if(!isThreadExit){
+            projectData.push({ parentID: data.node.id, nodes: [], edges: [] });
         }
     }
 }
@@ -534,7 +551,7 @@ async function checkNodeData() {
 }
 
 let wayTitle = '';
-let wayId='';
+let wayId = '';
 //根据节点ID搜索节点所在位置
 async function searchNodeByID(id: string) {
     for (const element of projectData) {
@@ -542,7 +559,7 @@ async function searchNodeByID(id: string) {
             if (node.id === id) {
                 if (element.parentID !== 'main') {
                     wayTitle = node.data.title + '->' + wayTitle;
-                    wayId=node.id+'->'+wayId;
+                    wayId = node.id + '->' + wayId;
                     await searchNodeByID(element.parentID);
                 } else {
                     wayTitle = node.data.title + '->' + wayTitle;
@@ -556,14 +573,15 @@ async function searchNodeByID(id: string) {
 
 
 async function saveProjetData(path: string, projectData: any) {
-    const jsonData = JSON.stringify(projectData);
-    //const encryptedText=await encryptAndCopyToClipboard(jsonData);
-    fs.writeFileSync(path, jsonData, 'utf8');
+    const code = encryptIV(projectData);
+    const str = Buffer.from(code).toString('base64');
+    fs.writeFileSync(path, str);
 }
 
 async function readProjectData(path: string) {
     const fileContent = fs.readFileSync(path, 'utf8');
-    return JSON.parse(fileContent);
+    const projectData = decryptIV(fileContent);
+    return projectData;
 }
 
 //节点标题修改
@@ -630,11 +648,44 @@ async function setFileIcon(context: ExtensionContext) {
 function getTheme() {
     const colorTheme = vscode.workspace.getConfiguration('workbench').get('colorTheme');
     let theme = 'light';
-    if ((colorTheme as string).toLowerCase().includes('dark')) { 
+    if ((colorTheme as string).toLowerCase().includes('dark')) {
         theme = 'dark';
     } else if ((colorTheme as string).toLowerCase().includes('light')) {
         theme = 'light';
     }
     return theme;
 }
+
+
+
+function encryptIV(json: object): string {
+    const jsonString = JSON.stringify(json);
+    const iv = CryptoJS.lib.WordArray.random(16); // 生成随机IV
+    const pasrekey= CryptoJS.enc.Utf8.parse(secretKey);
+    const encrypted = CryptoJS.AES.encrypt(jsonString, pasrekey, {
+        iv: iv,
+        mode: CryptoJS.mode.CBC,
+        padding: CryptoJS.pad.Pkcs7,
+    });
+
+    // const hexstring = iv.toString(CryptoJS.enc.Hex);
+    // console.log("iv:"+hexstring);
+    // const hexstringkey = pasrekey.toString(CryptoJS.enc.Hex);
+    // console.log("key:"+hexstringkey);
+    return iv.toString(CryptoJS.enc.Base64) + "||" + encrypted.ciphertext.toString(CryptoJS.enc.Base64);
+}
+
+async function decryptIV(encryptedData: string): Promise<object> {
+    const decodedData = Buffer.from(encryptedData, 'base64').toString('utf8');
+    const parts = decodedData.split("||");
+    const iv = CryptoJS.enc.Base64.parse(parts[0]);
+    const ciphertext = CryptoJS.enc.Base64.parse(parts[1]);
+    const decrypted = CryptoJS.AES.decrypt(
+        CryptoJS.lib.CipherParams.create({ ciphertext: ciphertext }),
+        CryptoJS.enc.Utf8.parse(secretKey),
+        { iv: iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 }
+    );
+    return JSON.parse(decrypted.toString(CryptoJS.enc.Utf8));
+}
+
 export function deactivate() { }

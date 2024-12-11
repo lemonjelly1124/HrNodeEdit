@@ -6,7 +6,7 @@ import "./TopToolBar.css";
 import { useWebviewPublicPath } from '../hooks/use-webview-public-path';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
-export const TopToolBar = (data:any) => {
+export const TopToolBar = (_data:any) => {
     const [savenodeIconPath] = useWebviewPublicPath(savenodeIcon)
     const [savenodeallIconPath] = useWebviewPublicPath(savenodeallIcon)
     const [savecodeallIconPath] = useWebviewPublicPath(savecodeallIcon)

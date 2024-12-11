@@ -1,6 +1,6 @@
 
 import * as vscode from 'vscode';
-import os = require('os');
+import * as os from 'os';
 interface TreeNode {
     id: string;
     label: string;

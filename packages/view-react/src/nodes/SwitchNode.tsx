@@ -56,7 +56,7 @@ export const SwitchNode = ({ data, id,selected }: any) => {
         }
 
     }
-    const handleContentChanged = (oldValue: string, newValue: string) => {
+    const handleContentChanged = (_oldValue: string, newValue: string) => {
         if (newValue === '') {
             setContent("备注");
             data.title = "备注";

@@ -1,6 +1,6 @@
 ﻿/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Handle, Position,Node } from "reactflow";
+import { Handle, Position } from "reactflow";
 import { useState, useRef, useEffect } from 'react';
 import './Node.css';
 import NodeMenu from "../components/NodeMenu";
@@ -46,7 +46,7 @@ export const ProcessNode = ({ data, id,selected }: any) => {
         }
 
     }
-    const handleContentChanged = (oldValue: string, newValue: string) => {
+    const handleContentChanged = (_oldValue: string, newValue: string) => {
         if (newValue === '') {
             setContent("备注");
             data.title = "备注";

@@ -45,7 +45,7 @@ export const JudgeNode = ({ data, id,selected }: any) => {
         }
 
     }
-    const handleContentChanged = (oldValue: string, newValue: string) => {
+    const handleContentChanged = (_oldValue: string, newValue: string) => {
         if (newValue === '') {
             setContent("备注");
             data.title = "备注";
@@ -164,8 +164,8 @@ export const JudgeNode = ({ data, id,selected }: any) => {
             <div className={`node-state ${data.theme}`}>
                 <NodeState theme={data.theme} isRunning={Running} isSubThread={Subthread} isNormal={Normal} onStatusChange={handleStatusChange} />
             </div>
-            <Handle className="node-handle-s" type="source" position={data.isSwapped ? Position.Left : Position.Right} style={{ top: '32px' }} isConnectable={true} onMouseEnter={onRightHandleClick} />
-            <Handle className="node-handle-s" type="source" position={data.isSwapped ? Position.Left : Position.Right} style={{ top: '62px' }} isConnectable={true} onMouseEnter={onRightHandleClick} />
+            <Handle className="node-handle-s" type="source" id="1"  position={data.isSwapped ? Position.Left : Position.Right} style={{ top: '32px' }} isConnectable={true} onMouseEnter={onRightHandleClick} />
+            <Handle className="node-handle-s" type="source" id="2" position={data.isSwapped ? Position.Left : Position.Right} style={{ top: '62px' }} isConnectable={true} onMouseEnter={onRightHandleClick} />
             <Handle className="node-handle-t" type="target" position={data.isSwapped ? Position.Right : Position.Left} style={{ top: '47px' }} isConnectable={true} onMouseEnter={onLeftHandleClick} />
             {isVisible && (
                 <div ref={componentRef} onBlur={handleComponentBlur} tabIndex={0} style={{ position: 'relative' }}>

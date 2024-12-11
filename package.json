@@ -5,18 +5,18 @@
   "main": "index.js",
   "scripts": {
     "dev": "run-p dev:view-*",
-    "dev:extension": "pnpm run -F extension watch",
+    "dev:extension": "pnpm run -F hr-nodeeditor watch",
     "dev:view-react": "pnpm run -F view-react watch",
     "dev:view-reactside1": "pnpm run -F view-reactside1 watch",
     "clear": "run-s clear:* && rm -rf ./node_modules",
-    "clear:extension": "pnpm run -F extension clear",
+    "clear:extension": "pnpm run -F hr-nodeeditor clear",
     "clear:view-react": "pnpm run -F view-react clear",
     "clear:view-reactside1": "pnpm run -F view-reactside1 clear",
     "build": "run-s build:*",
     "build:view-react": "pnpm run -F view-react build",
     "build:view-reactside1": "pnpm run -F view-reactside1 build",
-    "build:extension": "pnpm run -F extension compile",
-    "package": "pnpm run -F extension package"
+    "build:extension": "pnpm run -F hr-nodeeditor compile",
+    "package": "pnpm run -F hr-nodeeditor package"
   },
   "keywords": [],
   "author": "",

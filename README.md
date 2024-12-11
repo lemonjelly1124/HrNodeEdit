@@ -37,3 +37,8 @@ pnpm dev
 # 参考
 手把手教你创建VsCode的ViewView插件示例：[https://github.com/liutaigang/vscode-webview-extension-example/blob/main/documents/detail.md](https://github.com/liutaigang/vscode-webview-extension-example/blob/main/documents/detail.md)
 
+
+打包在hr-nodeeditor目录下
+pnpm i
+pnpm build
+pnpm package

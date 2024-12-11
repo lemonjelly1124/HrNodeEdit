@@ -9,10 +9,9 @@ import { getControllers } from 'cec-client-server/decorator';
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
-import os = require('os');
 import { SimpleTreeDataProvider } from './SimpleTreeDataProvider';
-
-import CryptoJS = require('crypto-js');
+import * as os from 'os';
+import * as CryptoJS from 'crypto-js';
 
 let projectPath = '';
 let projectData: any;
@@ -212,6 +211,7 @@ async function handleWebviewMessage(
         case 'saveallnode':
             await saveAllNode();
             checkNodeData();    //校验数据后保存所有节点数据
+            vscode.window.showInformationMessage('保存所有节点成功');
             break;
         case 'nodestatechanged':
             await nodeStatChanged(message.data);

@@ -1,9 +1,9 @@
 {
-    "name": "extension",
+    "name": "hr-nodeeditor",
     "displayName": "hr-nodeeditor",
     "description": "VsCode插件,节点编辑器",
     "version": "1.0.0",
-    "publisher": "lj",
+    "publisher": "hr",
     "engines": {
         "vscode": "^1.84.0"
     },

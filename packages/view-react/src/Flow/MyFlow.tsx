@@ -8,7 +8,7 @@ import { initialNodes, nodeTypes } from "../nodes";
 import { initialEdges, edgeTypes } from "../edges";
 import { useReactFlow } from 'reactflow';
 import { useCallback, useState, useEffect } from 'react';
-import dagre from "dagre";
+// import dagre from "dagre";
 import CryptoJS from 'crypto-js';
 import { Position } from '@xyflow/react';
 import NodeBar from '../components/NodeBar';
@@ -52,35 +52,35 @@ interface Edge {
     targetHandle: string;
 }
 
-const nodeWidth = 150;
-const nodeHeight = 90;
-const dagreGraph = new dagre.graphlib.Graph();
-dagreGraph.setDefaultEdgeLabel(() => ({}));
-const getLayoutedElements = (nodes: Node[], edges: Edge[], direction: string) => {
-    const isHorizontal = direction === "LR";
-    dagreGraph.setGraph({ rankdir: direction });
-    nodes.forEach((node) => {
-        dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
-    });
-    edges.forEach((edge) => {
-        dagreGraph.setEdge(edge.source, edge.target);
-    });
-    dagre.layout(dagreGraph);
-    const newNodes = nodes.map((node) => {
-        const nodeWithPosition = dagreGraph.node(node.id);
-        const newNode = {
-            ...node,
-            targetPosition: isHorizontal ? "left" : "top",
-            sourcePosition: isHorizontal ? "right" : "bottom",
-            position: {
-                x: nodeWithPosition.x - nodeWidth / 2,
-                y: nodeWithPosition.y - nodeHeight / 2
-            }
-        };
-        return newNode;
-    });
-    return { nodes: newNodes, edges };
-};
+// const nodeWidth = 150;
+// const nodeHeight = 90;
+// const dagreGraph = new dagre.graphlib.Graph();
+// dagreGraph.setDefaultEdgeLabel(() => ({}));
+// const getLayoutedElements = (nodes: Node[], edges: Edge[], direction: string) => {
+//     const isHorizontal = direction === "LR";
+//     dagreGraph.setGraph({ rankdir: direction });
+//     nodes.forEach((node) => {
+//         dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
+//     });
+//     edges.forEach((edge) => {
+//         dagreGraph.setEdge(edge.source, edge.target);
+//     });
+//     dagre.layout(dagreGraph);
+//     const newNodes = nodes.map((node) => {
+//         const nodeWithPosition = dagreGraph.node(node.id);
+//         const newNode = {
+//             ...node,
+//             targetPosition: isHorizontal ? "left" : "top",
+//             sourcePosition: isHorizontal ? "right" : "bottom",
+//             position: {
+//                 x: nodeWithPosition.x - nodeWidth / 2,
+//                 y: nodeWithPosition.y - nodeHeight / 2
+//             }
+//         };
+//         return newNode;
+//     });
+//     return { nodes: newNodes, edges };
+// };
 //创建随机id
 const generateUniqueId = () => `${Math.random().toString(36).substr(2, 7)}`;
 let parentID = '';
@@ -107,7 +107,7 @@ const decryptFromClipboard = async (): Promise<string> => {
 };
 const MyFlow = () => {
     const [theme, setTheme] = useState('');
-    const [projectPath, setProjectPath] = useState('');
+    const [, setProjectPath] = useState('');
     const [projectDir, setProjectDir] = useState('');
     const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
@@ -115,13 +115,13 @@ const MyFlow = () => {
     const [isNodeDrag, setIsNodeDrag] = useState(false);
     const [historyState, setHistoryState] = useState(0);    //当状态为0和1时表示操作会被记录，为1时表示按ctrl键保存最新状态,为2时表示跳过下次因操作触发的保存。
     const [historyArr, setHistoryArr] = useState<string[]>([]);
-    const [isEdgeAnimated, setIsEdgeAnimated] = useState(false);
+    // const [isEdgeAnimated, setIsEdgeAnimated] = useState(false);
     const [selectionNodes, setSelectionNodes] = useState<Node[]>([]);
     const [selectionEdges, setSelectionEdges] = useState<Edge[]>([]);
     const { screenToFlowPosition } = useReactFlow();
     const vscode = getVsCodeApi();
     const reactFlowInstance = useReactFlow();
-    const [options, setOptions] = useState([]);
+    const [, setOptions] = useState([]);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const updateOptions = (nodes: any) => {
@@ -148,12 +148,12 @@ const MyFlow = () => {
     }, [edges, nodes, historyArr, historyIndex]);
 
     //新建项目节点文件
-    const createNewNodeFile = () => {
-        vscode.postMessage({
-            type: 'createnodefile',
-            data: {}
-        });
-    }
+    // const createNewNodeFile = () => {
+    //     vscode.postMessage({
+    //         type: 'createnodefile',
+    //         data: {}
+    //     });
+    // }
 
     //打开节点对应的代码文件
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -166,28 +166,28 @@ const MyFlow = () => {
 
     //保存所有节点的代码
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    const saveCodeToExtension = (id: string, content: string) => {
-        vscode.postMessage({
-            type: 'savecode',
-            data: { id: id, content: content },
-        });
-    }
+    // const saveCodeToExtension = (id: string, content: string) => {
+    //     vscode.postMessage({
+    //         type: 'savecode',
+    //         data: { id: id, content: content },
+    //     });
+    // }
 
     //导入节点
-    const importNodeToExtension = () => {
-        vscode.postMessage({
-            type: 'importnode',
-            data: {},
-        });
-    }
+    // const importNodeToExtension = () => {
+    //     vscode.postMessage({
+    //         type: 'importnode',
+    //         data: {},
+    //     });
+    // }
 
     //打开项目文件
-    const openProjectToExtension = () => {
-        vscode.postMessage({
-            type: 'openproject',
-            data: {},
-        });
-    }
+    // const openProjectToExtension = () => {
+    //     vscode.postMessage({
+    //         type: 'openproject',
+    //         data: {},
+    //     });
+    // }
     //设置为当前标签页
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const setPanelActive = (id: string) => {
@@ -255,7 +255,7 @@ const MyFlow = () => {
     }
 
     //节点当前状态
-    const onNodeStateHandle = useCallback((id: string, state: any) => {
+    const onNodeStateHandle = useCallback((id: string, _state: any) => {
         setNodes((nds) => {
             const node = nds.find(node => node.id === id);
             if (node) {
@@ -369,13 +369,13 @@ const MyFlow = () => {
     }, [addHistory, handleNodeClick, handleNodeTitleChange, handleSwapBtnClick, onNodeStateHandle, setEdges, setNodes, subThreadToExtension, theme]);
 
 
-    const logInfo = () => {
+    // const logInfo = () => {
 
-        vscode.postMessage({
-            type: 'loginfo',
-            data: {}
-        });
-    }
+    //     vscode.postMessage({
+    //         type: 'loginfo',
+    //         data: {}
+    //     });
+    // }
 
     const onDragOver = useCallback((event: React.DragEvent<HTMLDivElement>) => {
         event.preventDefault();
@@ -732,26 +732,26 @@ const MyFlow = () => {
         setSelectionEdges((event as any).edges);
     };
 
-    const edgesAnimated = () => {
-        setIsEdgeAnimated(!isEdgeAnimated);
-        const updatedEdges = edges.map((edge) => ({
-            ...edge,
-            animated: isEdgeAnimated,
-        }));
-        setEdges(updatedEdges);
-    };
-    const onLayout = useCallback((direction: string) => {
-        const {
-            nodes: layoutedNodes,
-            edges: layoutedEdges
-        } = getLayoutedElements(nodes as Node[], edges as Edge[], direction);
+    // const edgesAnimated = () => {
+    //     setIsEdgeAnimated(!isEdgeAnimated);
+    //     const updatedEdges = edges.map((edge) => ({
+    //         ...edge,
+    //         animated: isEdgeAnimated,
+    //     }));
+    //     setEdges(updatedEdges);
+    // };
+    // const onLayout = useCallback((direction: string) => {
+    //     const {
+    //         nodes: layoutedNodes,
+    //         edges: layoutedEdges
+    //     } = getLayoutedElements(nodes as Node[], edges as Edge[], direction);
 
-        setNodes([...layoutedNodes] as Node[]);
-        setEdges([...layoutedEdges] as Edge[]);
-        reactFlowInstance.fitView();
-    },
-        [nodes, edges, setNodes, setEdges, reactFlowInstance]
-    );
+    //     setNodes([...layoutedNodes] as Node[]);
+    //     setEdges([...layoutedEdges] as Edge[]);
+    //     reactFlowInstance.fitView();
+    // },
+    //     [nodes, edges, setNodes, setEdges, reactFlowInstance]
+    // );
     return (
         <div style={{ width: '100vw', height: '100vh', padding: 0 }}>
             <ReactFlow
@@ -794,8 +794,8 @@ const MyFlow = () => {
                     <button onClick={() => saveCodeToExtension('', '')}>保存所有代码修改</button>
                     <button onClick={edgesAnimated}>边线动画</button>
                     <button onClick={() => onLayout("TB")}>纵向布局</button>
-                    <button onClick={() => onLayout("LR")}>横向布局</button>*/
-                        <button onClick={() => logInfo()}>输出LOG</button> }
+                    <button onClick={() => onLayout("LR")}>横向布局</button>
+                        <button onClick={() => logInfo()}>输出LOG</button> */}
                 </div>
                 <NodeBar theme={theme} />
             </ReactFlow>

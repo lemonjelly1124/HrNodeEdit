@@ -107,8 +107,6 @@ const decryptFromClipboard = async (): Promise<string> => {
 };
 const MyFlow = () => {
     const [theme, setTheme] = useState('');
-    const [, setProjectPath] = useState('');
-    const [projectDir, setProjectDir] = useState('');
     const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
     const [historyIndex, setHistoryIndex] = useState(0);
@@ -305,11 +303,8 @@ const MyFlow = () => {
 
     //节点双击事件
     const handleNodeClick = useCallback((node: any) => {
-        setProjectDir((p) => {
-            openCodeToExtension(p + "\\" + node.data.title + '_' + node.id + ".py");
-            return p;
-        });
-    }, [openCodeToExtension, setProjectDir]);
+        openCodeToExtension(node.data.title + '_' + node.id + ".py");
+    }, [openCodeToExtension]);
 
     //节点修改标题事件
     const handleNodeTitleChange = useCallback((node: any) => {
@@ -541,8 +536,6 @@ const MyFlow = () => {
         }
         const loadNodeData = (message: any) => {
             clearNode();
-            setProjectPath(message.path);
-            setProjectDir(message.path.substring(0, message.path.lastIndexOf('\\')));
             parentID = message.threadid;
             console.log(message);
             const mainElement = message.data;
@@ -610,7 +603,7 @@ const MyFlow = () => {
         return () => {
             window.removeEventListener('message', handleMessage);
         };
-    }, [addHistory, centerNode, clearNode, handleNodeClick, handleNodeTitleChange, handleSwapBtnClick, onNodeListClickHandle, onNodeStateHandle, onVsCodeThemeChange, projectDir, saveNodeToExtension, setEdges, setNodes, setPanelActive, setProjectPath, subThreadToExtension, theme, updateOptions]);
+    }, [addHistory, centerNode, clearNode, handleNodeClick, handleNodeTitleChange, handleSwapBtnClick, onNodeListClickHandle, onNodeStateHandle, onVsCodeThemeChange, saveNodeToExtension, setEdges, setNodes, setPanelActive, subThreadToExtension, theme, updateOptions]);
 
     useEffect(() => {
         if (historyArr.length == 0) {

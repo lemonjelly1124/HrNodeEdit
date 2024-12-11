@@ -14,6 +14,7 @@ import * as os from 'os';
 import * as CryptoJS from 'crypto-js';
 
 let projectPath = '';
+let nodeCodeDir = '';
 let projectData: any;
 let webviewPanels: vscode.WebviewPanel[] = [];
 let isSaveNodeToFile = true;
@@ -143,6 +144,7 @@ async function openMainThreadView(context: ExtensionContext, path: string) {
     });
     if (path !== '') {
         projectPath = path;
+        nodeCodeDir = projectPath.substring(0, projectPath.lastIndexOf('\\')) + "\\nodecode\\";     //节点代码文件存放目录
         projectData = await readProjectData(projectPath);
         
         const mainElement = projectData.find((element: any) => element.parentID === 'main');
@@ -194,6 +196,7 @@ async function handleWebviewMessage(
             break;
         case 'openproject':
             projectPath = await openProject();
+            nodeCodeDir = projectPath.substring(0, projectPath.lastIndexOf('\\')) + "\\nodecode\\";     //节点代码文件存放目录
             projectData = await readProjectData(projectPath);
             const mainElement = projectData.find((element: any) => element.parentID === 'main');
             panel.webview.postMessage({ type: 'openprojectback', path: projectPath, data: mainElement, threadid: 'main' });
@@ -278,6 +281,7 @@ async function createNewFile(panel: vscode.WebviewPanel) {
         });
 
         projectPath = filePath;
+        nodeCodeDir = projectPath.substring(0, projectPath.lastIndexOf('\\')) + "\\nodecode\\";     //节点代码文件存放目录
         projectData = projectData = JSON.parse(content);;
         const mainElement = projectData.find((element: any) => element.parentID === 'main');
         panel.webview.postMessage({ type: 'openprojectback', path: projectPath, data: mainElement, threadid: 'main' });
@@ -288,8 +292,10 @@ async function createNewFile(panel: vscode.WebviewPanel) {
 
 //新建代码标签页
 async function openNewFileWithContent(path: string) {
-    //vscode.window.showInformationMessage("路径" + path);
-    openFileInSplitEditor(path);
+    if (!fs.existsSync(nodeCodeDir)) {
+        fs.mkdirSync(nodeCodeDir, { recursive: true });
+    }
+    openFileInSplitEditor(nodeCodeDir+path);
 }
 
 //保存所有代码文件
@@ -341,7 +347,7 @@ async function openFileInSplitEditor(filePath: string) {
     // 检查文件是否存在
     if (!fs.existsSync(filePath)) {
         // 创建空文件或者带有默认内容的文件
-        saveProjetData(filePath, "");
+        fs.writeFileSync(filePath, "");
     }
     // 获取当前活动的编辑器
     // const activeEditor = vscode.window.activeTextEditor;
@@ -521,24 +527,25 @@ const deleteFile = (filePath: string): void => {
 
 //检查节点数据，删除无效数据和文件
 async function checkNodeData() {
-    const projectDir = projectPath.substring(0, projectPath.lastIndexOf('\\'));
     const nodeidArr = ['main'];
     for (const element of projectData) {
         for (const node of element.nodes) {
-            if (node.data.isSubthread) {   //有子线程的节点删除代码文件
-                deleteFile(projectDir + '\\' + node.data.title + '_' + node.id + '.py');
+            if (node.data.isSubthread) {   
+                //deleteFile(nodeCodeDir + node.data.title + '_' + node.id + '.py');      //有子线程的节点删除代码文件
             } else {
                 projectData = projectData.filter((item: any) => item.parentID !== node.id);    //删除没有子线程状态的节点的子线程
             }
             nodeidArr.push(node.id);
         }
     }
-    const files = fs.readdirSync(projectDir);
+    const files = fs.readdirSync(nodeCodeDir);
     for (const file of files) {
-        if (file.endsWith('.py')) {
+        //判断文件名中有下划线加长度为7的小写字母数字组合字符串
+        const regex = /_[a-z0-9]{7}\.py$/;
+        if (regex.test(file)) {
             const id = file.substring(file.lastIndexOf('_') + 1, file.lastIndexOf('.'));
             if (!nodeidArr.includes(id)) {
-                deleteFile(projectDir + '\\' + file);       //删除删除节点对应的代码文件
+                deleteFile(nodeCodeDir + file); //删除删除节点对应的代码文件
             }
         }
     }
@@ -589,21 +596,20 @@ async function nodeTitleChange(node: any) {
     console.log(node);
     const oldFile = node.oldtitle + '_' + node.id + '.py';
     const newFile = node.newtitle + '_' + node.id + '.py';
-    const projectDir = projectPath.substring(0, projectPath.lastIndexOf('\\'));
-    const files = fs.readdirSync(projectDir);
+    const files = fs.readdirSync(nodeCodeDir);
 
     const openEditors = vscode.window.visibleTextEditors;
     for (const editor of openEditors) {
-        if (editor.document.fileName === projectDir + '\\' + oldFile) {
+        if (editor.document.fileName === nodeCodeDir +  oldFile) {
             //保存旧文件的代码
             await editor.document.save();
             //重命名文件
             if (files.concat(node.oldtitle + '_' + node.id + '.py')) {
-                fs.renameSync(projectDir + '\\' + oldFile, projectDir + '\\' + newFile);
+                fs.renameSync(nodeCodeDir +  oldFile, nodeCodeDir +  newFile);
             }
             editor.hide();
             //打开重命名后的新文件
-            const document = await vscode.workspace.openTextDocument(projectDir + '\\' + newFile);
+            const document = await vscode.workspace.openTextDocument(nodeCodeDir + newFile);
             await vscode.window.showTextDocument(document, {
                 preview: true, // 使用预览模式替换当前文件
                 viewColumn: editor.viewColumn, // 保持在当前标签页

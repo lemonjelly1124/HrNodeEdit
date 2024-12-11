@@ -2,7 +2,8 @@
     "name": "hr-nodeeditor",
     "displayName": "hr-nodeeditor",
     "description": "VsCode插件,节点编辑器",
-    "version": "1.0.0",
+    "version": "1.0.11",
+    "icon": "D:hr_icon.png",
     "publisher": "hr",
     "engines": {
         "vscode": "^1.84.0"

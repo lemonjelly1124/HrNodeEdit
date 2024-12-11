@@ -212,6 +212,7 @@ const MyFlow = () => {
                     isSubthread: node.data.isSubthread,
                     isNormal: node.data.isNormal,
                     isSwapped: node.data.isSwapped,
+                    path: node.data.title + "_" + node.id
                 }
             }
         })
